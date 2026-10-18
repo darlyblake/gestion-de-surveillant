@@ -175,8 +175,8 @@
     const pagesPerWeek = Math.max(1, Math.ceil(per / per));
     const totalPages = pagesPerWeek * weeksCount;
     const rowMm = Math.round(Math.min(9, 127 / per) * 10) / 10;
-    const school = esc(c.school);
-    const footName = esc(c.school.split(' – ')[0] || c.school);
+    const school = esc(PT.getSchoolName ? PT.getSchoolName() : c.school);
+    const footName = esc(PT.getSchoolName ? PT.getSchoolName() : (c.school.split(' – ')[0] || c.school));
     const className = esc(c.name.trim() || '________________________');
     const lastDay = c.saturday ? 5 : 4;
     let page = 0;
@@ -195,8 +195,8 @@
       
       page++;
       html += `<section class="sheet prof" style="--row:${rowMm}mm">
-  <h2>LISTE DE POINTAGE – PROF</h2>
-  <p class="sheet-school">${school}</p>
+  ${PT.getSchoolLogoHtml()}\n  <h2>LISTE DE POINTAGE – PROF</h2>
+  <p class="sheet-school">${school}</p>\n  ${PT.getSchoolContactHtml()}
   <div class="prof-meta">
     <span>Classe : <b>${className}</b></span>
     <span class="horaires">HORAIRES</span>
