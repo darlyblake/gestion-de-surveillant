@@ -851,3 +851,20 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #b5c9e2; outline-
 #view-eleves #class-form > .field {
   border-radius: 0;
 }
+
+
+/* Relevés de notes : filtre de classe toujours visible au-dessus de la liste. */
+#view-notes .notes-class-filter {
+  order: -1;
+  margin: 0 0 16px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  background: var(--accent-soft);
+}
+#view-notes .notes-class-filter select {
+  width: 100%;
+  min-height: 44px;
+  font-weight: 600;
+}
