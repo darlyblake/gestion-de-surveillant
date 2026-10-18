@@ -806,3 +806,19 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #b5c9e2; outline-
 
 /* Classes : masquer l’ancien panneau « Mes classes » et ses contrôles de sauvegarde/restauration. La liste principale avec ses actions reste affichée. */
 #view-classes > .panel > section.card:first-child { display: none !important; }
+
+/* Fiche d’appel : retirer l’ancien panneau de fiches/sauvegarde et privilégier le sélecteur de classe. */
+#view-eleves > .panel > section.card:first-child { display: none !important; }
+#view-eleves #class-form > .field:has(#c-class-select) {
+  padding: 14px;
+  margin: 0 0 18px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  background: var(--accent-soft);
+}
+#view-eleves #c-class-select {
+  width: 100%;
+  min-height: 44px;
+  font-weight: 600;
+}
