@@ -1,5 +1,5 @@
 /* Service Worker pour l'application Gestion scolaire */
-const CACHE_NAME = 'gestion-surveillant-v2';
+const CACHE_NAME = 'gestion-surveillant-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -13,6 +13,7 @@ const ASSETS = [
   './exclusions.js',
   './notes.js',
   './app.js',
+  './modal-actions.js',
   './manifest.json',
   './pointage-scolaire.html',
   './pointage-eleves-complet.html'
