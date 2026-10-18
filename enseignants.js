@@ -320,7 +320,7 @@
     const b = $('t-delete');
     clearTimeout(armTimer);
     b.classList.remove('armed');
-    b.textContent = 'Supprimer cette classe';
+    b.textContent = 'Supprimer cette fiche';
   }
 
   $('t-delete').addEventListener('click', () => {
