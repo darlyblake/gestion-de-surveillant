@@ -15,7 +15,7 @@
 
   /* ---------- Données ---------- */
 
-  let state = { classes: [], currentId: null, showingStudents: false };
+  let state = { classes: [], currentId: null, showingStudents: false, viewMode: 'list' };
   let booted = false;
 
   function newClass(base) {
@@ -164,17 +164,22 @@
     const sheets = $('cls-sheets');
     const summary = $('cls-summary');
 
-    if (!state.showingStudents) {
+    const page = $('view-classes');
+    page.classList.toggle('class-list-mode', state.viewMode === 'list');
+    page.classList.toggle('class-students-mode', state.viewMode === 'students');
+    page.classList.toggle('class-edit-mode', state.viewMode === 'edit');
+
+    if (state.viewMode === 'list') {
       summary.textContent = `${state.classes.length} ${plural(state.classes.length, 'classe', 'classes')}`;
       let html = '<div class="classes-main-list">';
       html += '<div class="classes-main-toolbar"><h3>Liste des classes</h3><button type="button" class="btn primary" data-class-action="new">+ Ajouter une classe</button></div>';
       if (!state.classes.length) {
         html += '<p class="empty">Aucune classe enregistrée. Ajoutez votre première classe.</p>';
       } else {
-        html += '<div class="classes-table-wrap"><table class="classes-table"><thead><tr><th>Classe</th><th>Année scolaire</th><th>Effectif</th><th>Action</th></tr></thead><tbody>';
+        html += '<div class="classes-table-wrap"><table class="classes-table"><thead><tr><th>Classe</th><th>Année scolaire</th><th>Effectif</th><th>Actions</th></tr></thead><tbody>';
         state.classes.forEach((cls) => {
           const count = parseStudents(cls.students, false).length;
-          html += `<tr><td><strong>${esc(cls.name.trim() || 'Classe sans nom')}</strong></td><td>${esc(cls.year)}</td><td>${count} ${plural(count, 'élève', 'élèves')}</td><td><button type="button" class="btn" data-class-action="open" data-id="${esc(cls.id)}">Voir les élèves</button></td></tr>`;
+          html += `<tr><td><strong>${esc(cls.name.trim() || 'Classe sans nom')}</strong></td><td>${esc(cls.year)}</td><td>${count} ${plural(count, 'élève', 'élèves')}</td><td class="class-actions"><button type="button" class="btn" data-class-action="open" data-id="${esc(cls.id)}">Voir les élèves</button><button type="button" class="btn" data-class-action="edit" data-id="${esc(cls.id)}">Modifier</button><button type="button" class="btn danger" data-class-action="delete" data-id="${esc(cls.id)}">Supprimer</button></td></tr>`;
         });
         html += '</tbody></table></div>';
       }
@@ -193,7 +198,7 @@
     summary.textContent = `${students.length} ${plural(students.length, 'élève', 'élèves')} · ${c.year}`;
 
     let html = '<div class="class-preview">';
-    html += '<div class="classes-main-toolbar"><button type="button" class="btn" data-class-action="back">← Toutes les classes</button><button type="button" class="btn primary" data-class-action="add-student">+ Ajouter des élèves</button></div>';
+    html += '<div class="classes-main-toolbar"><button type="button" class="btn" data-class-action="back">← Toutes les classes</button>' + (state.viewMode === 'students' ? '<button type="button" class="btn primary" data-class-action="edit" data-id="' + esc(c.id) + '">Modifier la classe</button>' : '<span></span>') + '</div>';
     html += `<h3>${esc(c.name.trim() || 'Classe sans nom')}</h3>`;
     html += `<p><strong>Établissement :</strong> ${esc(c.school)}</p>`;
     html += `<p><strong>Année scolaire :</strong> ${esc(c.year)}</p>`;
@@ -217,9 +222,24 @@
     if (action === 'new') {
       $('cls-new').click();
     } else if (action === 'open') {
-      select(button.dataset.id);
+      select(button.dataset.id, 'students');
+    } else if (action === 'edit') {
+      select(button.dataset.id, 'edit');
+      $('cls-name').focus();
+    } else if (action === 'delete') {
+      const target = state.classes.find((cls) => cls.id === button.dataset.id);
+      if (!target || !window.confirm(`Supprimer la classe « ${target.name || 'Classe sans nom'} » ? Cette action ne peut pas être annulée.`)) return;
+      state.classes = state.classes.filter((cls) => cls.id !== target.id);
+      state.currentId = state.classes[0] ? state.classes[0].id : null;
+      state.showingStudents = false;
+      state.viewMode = 'list';
+      if (state.currentId && PT.setActiveClassId) PT.setActiveClassId(state.currentId);
+      save();
+      fillForm();
+      refresh();
     } else if (action === 'back') {
       state.showingStudents = false;
+      state.viewMode = 'list';
       refresh();
     } else if (action === 'add-student') {
       const form = $('cls-form');
@@ -237,9 +257,10 @@
     renderPreview();
   }
 
-  function select(id) {
+  function select(id, mode = 'edit') {
     state.currentId = id;
-    state.showingStudents = true;
+    state.viewMode = mode;
+    state.showingStudents = mode !== 'list';
     save();
     if (PT.setActiveClassId) PT.setActiveClassId(id);
     disarmDelete();
@@ -263,7 +284,7 @@
   $('cls-new').addEventListener('click', () => {
     const c = newClass(current());
     state.classes.push(c);
-    select(c.id);
+    select(c.id, 'edit');
     $('cls-name').focus();
   });
 
@@ -303,8 +324,14 @@
     }
     disarmDelete();
     state.classes = state.classes.filter((c) => c.id !== state.currentId);
-    if (!state.classes.length) state.classes.push(newClass());
-    select(state.classes[0].id);
+    state.currentId = state.classes[0] ? state.classes[0].id : null;
+    state.viewMode = 'list';
+    state.showingStudents = false;
+    state.viewMode = 'list';
+    if (state.currentId && PT.setActiveClassId) PT.setActiveClassId(state.currentId);
+    save();
+    fillForm();
+    refresh();
   });
 
   /* ---------- Sauvegarde dans un fichier ---------- */
@@ -388,7 +415,7 @@
       const sharedId = PT.getActiveClassId ? PT.getActiveClassId() : null;
       if (sharedId && state.classes.some((c) => c.id === sharedId)) state.currentId = sharedId;
     } else {
-      state = { classes: [], currentId: null, showingStudents: false };
+      state = { classes: [], currentId: null, showingStudents: false, viewMode: 'list' };
     }
     state.showingStudents = false;
     if (state.currentId && PT.setActiveClassId) PT.setActiveClassId(state.currentId);
