@@ -1,5 +1,5 @@
 /* Service Worker pour l'application Gestion scolaire */
-const CACHE_NAME = 'gestion-surveillant-v11';
+const CACHE_NAME = 'gestion-surveillant-v12';
 const ASSETS = [
   './',
   './index.html',
