@@ -21,8 +21,9 @@
   function newClass(base) {
     return {
       id: uid(),
+      linkedClassId: PT.getActiveClassId ? PT.getActiveClassId() : null,
       name: '',
-      school: base && base.school ? base.school : DEFAULT_SCHOOL,
+      school: '',
       start: toISO(mondayOf(new Date())),
       saturday: false,
       weeks: 1,
@@ -35,8 +36,9 @@
     const base = newClass();
     const c = Object.assign({}, base, raw || {});
     if (!c.id) c.id = base.id;
+    c.linkedClassId = c.linkedClassId || null;
     c.name = String(c.name || '');
-    c.school = String(c.school || DEFAULT_SCHOOL);
+    c.school = String(c.school || '');
     c.saturday = !!c.saturday;
     c.pad = c.pad !== false;
     c.weeks = clamp(parseInt(c.weeks, 10) || 1, 1, 40);
@@ -106,6 +108,23 @@
 
   function fillForm() {
     const c = current();
+    const centralClasses = PT.getCentralClasses ? PT.getCentralClasses() : [];
+    const activeId = PT.getActiveClassId ? PT.getActiveClassId() : null;
+    if (!c.linkedClassId) c.linkedClassId = activeId;
+    const classSelect = $('t-class-select');
+    if (classSelect) {
+      classSelect.innerHTML = '<option value="">-- Sélectionner une classe --</option>';
+      centralClasses.forEach((cls) => {
+        const opt = document.createElement('option');
+        opt.value = cls.id;
+        opt.textContent = cls.name || 'Classe sans nom';
+        opt.selected = cls.id === c.linkedClassId;
+        classSelect.appendChild(opt);
+      });
+    }
+    const linkedClass = centralClasses.find((cls) => cls.id === c.linkedClassId);
+    c.name = linkedClass ? linkedClass.name || '' : '';
+    c.school = linkedClass ? linkedClass.school || '' : '';
     $('t-name').value = c.name;
     $('t-school').value = c.school;
     $('t-start').value = c.start;
@@ -117,8 +136,11 @@
 
   function readForm() {
     const c = current();
-    c.name = $('t-name').value;
-    c.school = $('t-school').value;
+    c.linkedClassId = $('t-class-select') ? ($('t-class-select').value || null) : (PT.getActiveClassId ? PT.getActiveClassId() : null);
+    if (PT.setActiveClassId && c.linkedClassId) PT.setActiveClassId(c.linkedClassId);
+    const linkedClass = (PT.getCentralClasses ? PT.getCentralClasses() : []).find((cls) => cls.id === c.linkedClassId);
+    c.name = linkedClass ? linkedClass.name || '' : '';
+    c.school = linkedClass ? linkedClass.school || '' : '';
     c.start = $('t-start').value;
     c.saturday = $('t-saturday').checked;
     c.perPage = clamp(parseInt($('t-perpage').value, 10) || 20, 10, 30);
@@ -254,6 +276,8 @@
 
   function select(id) {
     state.currentId = id;
+    const chosen = current();
+    if (chosen && chosen.linkedClassId && PT.setActiveClassId) PT.setActiveClassId(chosen.linkedClassId);
     save();
     disarmDelete();
     fillForm();
@@ -266,6 +290,7 @@
     refresh();
   });
   $('t-form').addEventListener('submit', (e) => e.preventDefault());
+  $('t-class-select').addEventListener('change', () => { readForm(); save(); fillForm(); refresh(); });
 
   $('t-class-list').addEventListener('click', (e) => {
     const b = e.target.closest('button[data-id]');
@@ -372,9 +397,33 @@
     }
   }
 
+  function syncActiveClass() {
+    const classId = PT.getActiveClassId ? PT.getActiveClassId() : null;
+    if (!classId) return;
+    const records = state.classes;
+    const matching = records.find((item) => item.linkedClassId === classId);
+    if (matching) {
+      state.currentId = matching.id;
+    } else {
+      const active = current();
+      if (active && !active.linkedClassId) {
+        active.linkedClassId = classId;
+      } else {
+        const next = newClass(active);
+        next.linkedClassId = classId;
+        records.push(next);
+        state.currentId = next.id;
+      }
+      save();
+    }
+    fillForm();
+    refresh();
+  }
+
   PT.views.enseignants = {
     show() {
-      if (!booted) boot(); else renderPreview();
+      if (!booted) boot();
+      syncActiveClass();
     }
   };
 })();
