@@ -54,8 +54,7 @@
   }
 
   function sampleClass() {
-    const c = newClass();
-    return c;
+    return newClass();
   }
 
   function load() {
