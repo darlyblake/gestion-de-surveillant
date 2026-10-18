@@ -45,7 +45,7 @@
     return c;
   }
 
-  function sampleClass() {
+  function createInitialClass() {
     return newClass();
   }
 
