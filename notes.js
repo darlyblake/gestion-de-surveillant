@@ -21,7 +21,7 @@
   function newReleve(base) {
     return {
       id: uid(),
-      linkedClassId: null,
+      linkedClassId: PT.getActiveClassId ? PT.getActiveClassId() : null,
       subject: '',
       trimester: '1er',
       notes: {}, // { studentName: { int: [6, 7, 8], devoirs: [12, 14, 15], moyenne: 13 } }
@@ -93,6 +93,7 @@
 
   function fillForm() {
     const r = current();
+    if (r && !r.linkedClassId && PT.getActiveClassId) r.linkedClassId = PT.getActiveClassId();
     const centralClasses = PT.views.classes ? PT.views.classes.getAllClasses() : [];
     
     // Remplir le sélecteur de classes
@@ -262,6 +263,8 @@
 
   function select(id) {
     state.currentId = id;
+    const chosen = current();
+    if (chosen && chosen.linkedClassId && PT.setActiveClassId) PT.setActiveClassId(chosen.linkedClassId);
     save();
     fillForm();
     refresh();
@@ -277,6 +280,7 @@
 
   $('n-class-select').addEventListener('change', () => {
     readForm();
+    if (PT.setActiveClassId) PT.setActiveClassId(current().linkedClassId);
     save();
     fillForm();
   });
@@ -364,9 +368,33 @@
     }
   }
 
+  function syncActiveClass() {
+    const classId = PT.getActiveClassId ? PT.getActiveClassId() : null;
+    if (!classId) return;
+    const records = state.relevés;
+    const matching = records.find((item) => item.linkedClassId === classId);
+    if (matching) {
+      state.currentId = matching.id;
+    } else {
+      const active = current();
+      if (active && !active.linkedClassId) {
+        active.linkedClassId = classId;
+      } else {
+        const next = newReleve(active);
+        next.linkedClassId = classId;
+        records.push(next);
+        state.currentId = next.id;
+      }
+      save();
+    }
+    fillForm();
+    refresh();
+  }
+
   PT.views.notes = {
     show() {
-      if (!booted) boot(); else renderPreview();
+      if (!booted) boot();
+      syncActiveClass();
     },
     
     getAllReleves() {
