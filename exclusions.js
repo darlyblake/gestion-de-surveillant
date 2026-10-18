@@ -191,8 +191,8 @@
     const typeColor = exclusion.type === 'temporaire' ? '#f59e0b' : '#b3261e';
     
     return `<section class="sheet exclusion">
-  <h2 style="color: ${typeColor};">${typeLabel}</h2>
-  <p class="sheet-school">${esc(school)}</p>
+  ${PT.getSchoolLogoHtml()}\n  <h2 style="color: ${typeColor};">${typeLabel}</h2>
+  <p class="sheet-school">${esc(school)}</p>\n  ${PT.getSchoolContactHtml()}
   <div class="exclusion-content">
     <div class="exclusion-row">
       <span class="exclusion-label">Élève :</span>
@@ -247,7 +247,7 @@
     
     const centralClasses = PT.views.classes ? PT.views.classes.getAllClasses() : [];
     const linkedClass = centralClasses.find((cls) => cls.id === c.linkedClassId);
-    const school = linkedClass ? linkedClass.school : DEFAULT_SCHOOL;
+    const school = PT.getSchoolName ? PT.getSchoolName() : (linkedClass ? linkedClass.school : DEFAULT_SCHOOL);
     
     const printArea = $('e-print-area');
     printArea.innerHTML = generateExclusionSheet(exclusion, school);
