@@ -26,6 +26,7 @@
       <a href="#billets" data-nav="billets"><span class="nav-symbol" aria-hidden="true">▧</span><span>Billets d'entrée / sortie</span></a>
       <a href="#exclusions" data-nav="exclusions"><span class="nav-symbol" aria-hidden="true">⊘</span><span>Exclusions</span></a>
       <a href="#notes" data-nav="notes"><span class="nav-symbol" aria-hidden="true">≡</span><span>Relevés de notes</span></a>
+      <a href="#configuration" data-nav="configuration"><span class="nav-symbol" aria-hidden="true">⚙</span><span>Configuration de l’école</span></a>
     </nav>
     <div class="sidebar-footer"><span class="status-dot" aria-hidden="true"></span><span>Données enregistrées sur cet appareil</span></div>
   </aside>
@@ -119,6 +120,18 @@
     </div>
   </div>
 </main>
+
+<main class="layout school-config-layout" id="view-configuration" hidden>
+<section class="school-config-panel"><div class="school-config-heading"><div><p class="eyebrow">PARAMÈTRES GÉNÉRAUX</p><h2>Configuration de l’école</h2><p class="muted">Les informations officielles utilisées dans les documents de l’application.</p></div></div>
+<form id="school-config-form" class="school-config-form" autocomplete="on">
+<h3>Identité de l’établissement</h3><div class="school-config-grid">
+<div class="field"><label for="sc-name">Nom officiel *</label><input id="sc-name" required maxlength="120" placeholder="Nom de l’établissement"></div><div class="field"><label for="sc-acronym">Sigle / nom court</label><input id="sc-acronym" maxlength="40" placeholder="Sigle"></div>
+<div class="field"><label for="sc-type">Type d’établissement</label><select id="sc-type"><option value="">Sélectionner</option><option>École primaire</option><option>Collège</option><option>Lycée</option><option>Collège et lycée</option><option>Complexe scolaire</option><option>Autre</option></select></div><div class="field"><label for="sc-director">Chef d’établissement / responsable</label><input id="sc-director" maxlength="120" placeholder="Nom et prénom"></div></div>
+<h3>Coordonnées</h3><div class="school-config-grid"><div class="field field-wide"><label for="sc-address">Adresse / boîte postale</label><input id="sc-address" maxlength="180" placeholder="Quartier, rue, B.P. …"></div><div class="field"><label for="sc-city">Ville</label><input id="sc-city" maxlength="80" placeholder="Owendo"></div><div class="field"><label for="sc-phone">Téléphone</label><input id="sc-phone" type="tel" maxlength="40" placeholder="+241 …"></div><div class="field"><label for="sc-email">E-mail</label><input id="sc-email" type="email" maxlength="120" placeholder="ecole@exemple.ga"></div></div>
+<h3>Année scolaire et présentation</h3><div class="school-config-grid"><div class="field"><label for="sc-year">Année scolaire en cours</label><input id="sc-year" maxlength="20" placeholder="2026-2027"></div><div class="field"><label for="sc-motto">Devise / mention complémentaire</label><input id="sc-motto" maxlength="160" placeholder="Devise officielle"></div></div>
+<h3>Logo de l’établissement</h3><div class="school-logo-row"><div id="sc-logo-preview" class="school-logo-preview"><span>Aucun logo</span></div><div class="school-logo-controls"><label for="sc-logo-file">Importer un logo (PNG, JPG ou WebP)</label><input id="sc-logo-file" type="file" accept="image/png,image/jpeg,image/webp"><p class="hint">Facultatif, 1 Mo maximum. Conservé sur cet appareil.</p><button type="button" id="sc-logo-remove" class="btn">Retirer le logo</button></div></div>
+<div id="sc-status" class="saved" role="status" aria-live="polite"></div><div class="school-config-actions"><button type="submit" class="btn primary">Enregistrer la configuration</button><button type="button" id="sc-reset" class="btn">Annuler les modifications</button></div></form></section>
+<aside class="school-config-preview"><p class="eyebrow">APERÇU</p><h3>En-tête de l’établissement</h3><div class="school-preview-paper"><div id="sc-preview-logo" class="school-preview-logo" hidden></div><strong id="sc-preview-name">Nom de l’établissement</strong><span id="sc-preview-acronym"></span><span id="sc-preview-type"></span><span id="sc-preview-address"></span><span id="sc-preview-contact"></span><span id="sc-preview-director"></span><span id="sc-preview-year"></span><em id="sc-preview-motto"></em></div><p class="hint">Les informations enregistrées servent de référence aux en-têtes des documents. Stockage local à ce navigateur.</p></aside></main>
 
 <!-- ===================== Classes et Élèves (centralisé) ===================== -->
 <main class="layout" id="view-classes" hidden>
@@ -673,6 +686,7 @@
 </main>
 
 <script src="common.js"></script>
+<script src="school-config.js"></script>
 <script src="storage.js"></script>
 <script src="classes.js"></script>
 <script src="eleves.js"></script>
