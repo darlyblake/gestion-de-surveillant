@@ -102,6 +102,16 @@
 
   function fillForm() {
     const c = current();
+    if (!c) {
+      $('cls-name').value = '';
+      $('cls-year').value = '';
+      $('cls-school').value = DEFAULT_SCHOOL;
+      $('cls-students').value = '';
+      $('cls-sort').checked = false;
+      $('cls-add-name').value = '';
+      $('cls-count').textContent = '';
+      return;
+    }
     $('cls-name').value = c.name;
     $('cls-year').value = c.year;
     $('cls-school').value = c.school;
@@ -122,6 +132,10 @@
 
   function updateCount() {
     const c = current();
+    if (!c) {
+      $('cls-count').textContent = '';
+      return;
+    }
     const students = parseStudents(c.students, c.sort);
     $('cls-count').textContent = students.length
       ? `${students.length} ${plural(students.length, 'élève', 'élèves')}`
@@ -374,8 +388,7 @@
       state = loaded;
       if (!state.classes.some((c) => c.id === state.currentId)) state.currentId = state.classes[0].id;
     } else {
-      const c = newClass();
-      state = { classes: [c], currentId: c.id, showingStudents: false };
+      state = { classes: [], currentId: null, showingStudents: false };
     }
     state.showingStudents = false;
     fillForm();
