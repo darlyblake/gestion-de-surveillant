@@ -26,7 +26,12 @@
     Object.keys(VIEWS).forEach((k) => { $(VIEWS[k]).hidden = k !== key; });
     $('btn-print').hidden = key === 'home';
     $('view-title').textContent = TITLES[key] || '';
-    document.title = key === 'home' ? 'Pointage scolaire' : `${TITLES[key]} – Pointage scolaire`;
+    document.querySelectorAll('.sidebar-nav a[data-nav]').forEach((link) => {
+      const active = link.dataset.nav === key;
+      if (active) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+    });
+    document.title = key === 'home' ? 'Gestion scolaire' : `${TITLES[key]} – Gestion scolaire`;
 
     if (key === 'home') {
       $('page-style').textContent = '';
@@ -36,6 +41,32 @@
     }
     window.scrollTo(0, 0);
   }
+
+  const menuButton = $('btn-menu');
+  if (menuButton) {
+    menuButton.addEventListener('click', () => {
+      const open = document.body.classList.toggle('sidebar-open');
+      menuButton.setAttribute('aria-expanded', String(open));
+      menuButton.setAttribute('aria-label', open ? 'Fermer le menu' : 'Ouvrir le menu');
+    });
+    document.querySelectorAll('.sidebar-nav a').forEach((link) => {
+      link.addEventListener('click', () => {
+        document.body.classList.remove('sidebar-open');
+        menuButton.setAttribute('aria-expanded', 'false');
+        menuButton.setAttribute('aria-label', 'Ouvrir le menu');
+      });
+    });
+  }
+
+  document.body.addEventListener('click', (event) => {
+    if (event.target === document.body && document.body.classList.contains('sidebar-open')) {
+      document.body.classList.remove('sidebar-open');
+      if (menuButton) {
+        menuButton.setAttribute('aria-expanded', 'false');
+        menuButton.setAttribute('aria-label', 'Ouvrir le menu');
+      }
+    }
+  });
 
   $('btn-print').addEventListener('click', () => window.print());
   window.addEventListener('hashchange', route);

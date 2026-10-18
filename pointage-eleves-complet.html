@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,18 +9,18 @@
    Sur téléphone, le panneau passe au-dessus de l'aperçu. */
 
 :root {
-  --bg: #eceff0;
+  --bg: #f3f5f8;
   --panel: #ffffff;
-  --ink: #15262b;
-  --muted: #566a70;
-  --line: #d2dadc;
-  --accent: #0e6a5b;
+  --ink: #1b2738;
+  --muted: #66758a;
+  --line: #dce3ec;
+  --accent: #17365d;
   --accent-ink: #ffffff;
-  --accent-soft: #dcefea;
+  --accent-soft: #e9eff7;
   --danger: #b3261e;
   --warn-bg: #fff3d6;
   --warn-ink: #6b4a00;
-  --shadow: 0 1px 2px rgba(10, 30, 35, .08), 0 10px 28px rgba(10, 30, 35, .10);
+  --shadow: 0 1px 3px rgba(19, 42, 71, .06);
   --paper: #ffffff;
   --paper-ink: #111111;
   --paper-head: #e8e8e8;
@@ -357,6 +357,16 @@ table.pt { width: 100%; border-collapse: collapse; table-layout: fixed; font-siz
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 
+
+/* Identité visuelle commune avec le tableau de bord principal */
+html[data-theme="light"] { color-scheme: light; }
+body { background: #f3f5f8; color: #1b2738; }
+.topbar { background: #fff; border-bottom-color: #dce3ec; box-shadow: none; }
+.brand h1 { color: #17365d; }
+.card, .preview { border-radius: 6px; box-shadow: none; }
+.btn { border-radius: 5px; }
+.btn.primary { background: #17365d; border-color: #17365d; color: #fff; }
+.btn.primary:hover { background: #214873; }
 </style>
 <style id="page-style"></style>
 </head>
@@ -367,6 +377,7 @@ table.pt { width: 100%; border-collapse: collapse; table-layout: fixed; font-siz
     <span class="mark" aria-hidden="true"></span>
     <h1>Pointage des élèves</h1>
   </div>
+  <a class="btn" href="./index.html" aria-label="Retour à la navigation générale">Retour à l’espace surveillant</a>
   <button type="button" id="btn-print" class="btn primary">Imprimer</button>
 </header>
 
