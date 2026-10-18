@@ -239,9 +239,9 @@
 
   function select(id) {
     state.currentId = id;
-    if (PT.setActiveClassId) PT.setActiveClassId(id);
     state.showingStudents = true;
     save();
+    if (PT.setActiveClassId) PT.setActiveClassId(id);
     disarmDelete();
     fillForm();
     refresh();
