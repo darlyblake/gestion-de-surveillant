@@ -1,20 +1,24 @@
-/* Service Worker pour l'application Pointage Scolaire */
-const CACHE_NAME = 'pointage-scolaire-v1';
+/* Service Worker pour l'application Gestion scolaire */
+const CACHE_NAME = 'gestion-surveillant-v2';
 const ASSETS = [
   './',
   './index.html',
   './style.css',
   './common.js',
+  './storage.js',
   './classes.js',
   './eleves.js',
   './enseignants.js',
   './billets.js',
   './exclusions.js',
+  './notes.js',
   './app.js',
-  './manifest.json'
+  './manifest.json',
+  './pointage-scolaire.html',
+  './pointage-eleves-complet.html'
 ];
 
-// Installation du service worker
+// Installation : prépare le nouveau cache avant de remplacer l'ancien.
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -23,43 +27,51 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activation du service worker
+// Activation : supprime les anciennes versions du cache puis prend le contrôle.
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
-      .then((cacheNames) => {
-        return Promise.all(
-          cacheNames
-            .filter((name) => name !== CACHE_NAME)
-            .map((name) => caches.delete(name))
-        );
-      })
+      .then((cacheNames) => Promise.all(
+        cacheNames
+          .filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
+      ))
       .then(() => self.clients.claim())
   );
 });
 
-// Interception des requêtes
+// Navigation réseau en priorité pour éviter de garder une ancienne page HTML.
+// Les ressources statiques restent disponibles hors ligne via le cache.
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Retourner la version en cache si disponible
-        if (response) {
-          return response;
-        }
-        // Sinon, faire la requête réseau
-        return fetch(event.request).then((response) => {
-          // Mettre en cache les nouvelles ressources
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
+  if (event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) {
+    return;
+  }
+
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
           }
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME)
-            .then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
           return response;
-        });
-      })
+        })
+        .catch(() => caches.match(event.request).then((cached) => cached || caches.match('./index.html')))
+    );
+    return;
+  }
+
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
+      return fetch(event.request).then((response) => {
+        if (response && response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        }
+        return response;
+      });
+    })
   );
 });
