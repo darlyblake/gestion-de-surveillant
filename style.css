@@ -2,18 +2,18 @@
    Sur téléphone, le panneau passe au-dessus de l'aperçu. */
 
 :root {
-  --bg: #eceff0;
+  --bg: #f3f5f8;
   --panel: #ffffff;
-  --ink: #15262b;
-  --muted: #566a70;
-  --line: #d2dadc;
-  --accent: #0e6a5b;
+  --ink: #1b2738;
+  --muted: #66758a;
+  --line: #dce3ec;
+  --accent: #17365d;
   --accent-ink: #ffffff;
-  --accent-soft: #dcefea;
+  --accent-soft: #e9eff7;
   --danger: #b3261e;
   --warn-bg: #fff3d6;
   --warn-ink: #6b4a00;
-  --shadow: 0 1px 2px rgba(10, 30, 35, .08), 0 10px 28px rgba(10, 30, 35, .10);
+  --shadow: 0 1px 3px rgba(19, 42, 71, .06);
   --paper: #ffffff;
   --paper-ink: #111111;
   --paper-head: #e8e8e8;
@@ -129,7 +129,7 @@ h1, h2 { margin: 0; }
 .card {
   background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -171,7 +171,7 @@ input[type="text"], input[type="number"], input[type="date"], select, textarea {
   color: var(--ink);
   background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 7px;
+  border-radius: 4px;
   padding: 9px 10px;
 }
 textarea { resize: vertical; min-height: 140px; line-height: 1.5; }
