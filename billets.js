@@ -191,8 +191,8 @@
     const typeColor = billet.type === 'entree' ? '#0e6a5b' : '#b3261e';
     
     return `<section class="sheet billet">
-  <h2 style="color: ${typeColor};">${typeLabel}</h2>
-  <p class="sheet-school">${esc(school)}</p>
+  ${PT.getSchoolLogoHtml()}\n  <h2 style="color: ${typeColor};">${typeLabel}</h2>
+  <p class="sheet-school">${esc(school)}</p>\n  ${PT.getSchoolContactHtml()}
   <div class="billet-content">
     <div class="billet-row">
       <span class="billet-label">Élève :</span>
@@ -234,7 +234,7 @@
     
     const centralClasses = PT.views.classes ? PT.views.classes.getAllClasses() : [];
     const linkedClass = centralClasses.find((cls) => cls.id === c.linkedClassId);
-    const school = linkedClass ? linkedClass.school : DEFAULT_SCHOOL;
+    const school = PT.getSchoolName ? PT.getSchoolName() : (linkedClass ? linkedClass.school : DEFAULT_SCHOOL);
     
     const printArea = $('b-print-area');
     printArea.innerHTML = generateBilletSheet(billet, school);
