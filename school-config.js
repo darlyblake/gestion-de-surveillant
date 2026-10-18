@@ -9,6 +9,7 @@ function setConfig(c){const next={...DEFAULTS,...c};localStorage.setItem(KEY,JSO
 function getSchoolName(){return getConfig().name.trim()||DEFAULTS.name;}
 function getSchoolContactLine(){const c=getConfig();return [c.address,c.city,c.phone,c.email].filter(Boolean).map(esc).join(' · ');}
 function getSchoolLogoHtml(){const logo=getConfig().logo;return logo?'<div class="sheet-school-logo"><img src="'+esc(logo)+'" alt="Logo de l’établissement"></div>':'';}
+function getSchoolContactHtml(){const line=getSchoolContactLine();return line?'<p class="sheet-school-contact">'+line+'</p>':'';}
 function applyBrand(){const c=getConfig(),n=c.acronym.trim()||c.name.trim()||'Gestion scolaire';const top=document.querySelector('.brand h1'),side=document.querySelector('.sidebar-brand-copy strong');if(top)top.textContent=n;if(side)side.textContent=n;}
 function values(){const map={name:'name',acronym:'acronym',type:'type',director:'director',address:'address',city:'city',phone:'phone',email:'email',year:'academicYear',motto:'motto'},c={...getConfig()};Object.entries(map).forEach(([id,key])=>{const el=$('sc-'+id);if(el)c[key]=el.value.trim();});return c;}
 function preview(c=getConfig()){const put=(id,v)=>{const el=$(id);if(el)el.textContent=v||'';};put('sc-preview-name',c.name||'Nom de l’établissement');put('sc-preview-acronym',c.acronym);put('sc-preview-type',c.type);put('sc-preview-address',[c.address,c.city].filter(Boolean).join(' · '));put('sc-preview-contact',[c.phone,c.email].filter(Boolean).join(' · '));put('sc-preview-director',c.director?'Responsable : '+c.director:'');put('sc-preview-year',c.academicYear?'Année scolaire : '+c.academicYear:'');put('sc-preview-motto',c.motto);const logo=$('sc-logo-preview'),paper=$('sc-preview-logo');if(logo)logo.innerHTML=c.logo?'<img src="'+esc(c.logo)+'" alt="Logo">':'<span>Aucun logo</span>';if(paper){paper.hidden=!c.logo;paper.innerHTML=c.logo?'<img src="'+esc(c.logo)+'" alt="Logo de l’établissement">':'';}}
@@ -18,6 +19,6 @@ const file=$('sc-logo-file');if(file)file.addEventListener('change',()=>{const f
 if($('sc-logo-remove'))$('sc-logo-remove').addEventListener('click',()=>{try{const c={...values(),logo:''};setConfig(c);preview(c);if(file)file.value='';}catch(_){}});
 if($('sc-reset'))$('sc-reset').addEventListener('click',()=>{fill();const s=$('sc-status');if(s)s.textContent='Modifications annulées.';});
 window.addEventListener('pt:school-config-changed',()=>{applyBrand();preview();});}
-PT.getSchoolConfig=getConfig;PT.getSchoolName=getSchoolName;PT.getSchoolContactLine=getSchoolContactLine;PT.getSchoolLogoHtml=getSchoolLogoHtml;PT.views.configuration={show:()=>{fill();applyBrand();}};
+PT.getSchoolConfig=getConfig;PT.getSchoolName=getSchoolName;PT.getSchoolContactLine=getSchoolContactLine;PT.getSchoolLogoHtml=getSchoolLogoHtml;PT.getSchoolContactHtml=getSchoolContactHtml;PT.views.configuration={show:()=>{fill();applyBrand();}};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
