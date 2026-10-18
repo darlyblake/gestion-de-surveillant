@@ -74,15 +74,7 @@
   }
 
   function sampleClass() {
-    const c = newClass();
-    c.name = 'Classe exemple';
-    c.students = [
-      'MBA Sarah', 'NZE Kevin', 'OBAME Diane', 'ONDO Brice', 'MOUNGUENGUI Estelle',
-      'NGUEMA Junior', 'MOUELE Prisca', 'ELLA Grâce', 'BIYOGHE Samuel',
-      'MAGANGA Rodrigue', 'ASSOUMOU Léa', 'ISSEMBE Carine'
-    ].join('\n');
-    c.sort = true;
-    return c;
+    return newClass();
   }
 
   function load() {
