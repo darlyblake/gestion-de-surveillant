@@ -90,16 +90,20 @@
       if (event.target === dialog) dialog.close();
     });
 
-    const previewHead = layout.querySelector('.preview-head');
-    const trigger = document.createElement('button');
-    trigger.type = 'button';
-    trigger.className = 'btn primary modal-action-trigger';
-    trigger.textContent = 'Actions et paramètres';
-    trigger.setAttribute('aria-haspopup', 'dialog');
-    trigger.setAttribute('aria-controls', dialog.id);
-    trigger.addEventListener('click', open);
-    if (previewHead) previewHead.appendChild(trigger);
-    else layout.prepend(trigger);
+    // La page Classes possède ses propres boutons explicites (« Ajouter une classe »
+    // et « Ajouter des élèves ») : pas de bouton générique supplémentaire.
+    if (layout.id !== 'view-classes') {
+      const previewHead = layout.querySelector('.preview-head');
+      const trigger = document.createElement('button');
+      trigger.type = 'button';
+      trigger.className = 'btn primary modal-action-trigger';
+      trigger.textContent = 'Actions et paramètres';
+      trigger.setAttribute('aria-haspopup', 'dialog');
+      trigger.setAttribute('aria-controls', dialog.id);
+      trigger.addEventListener('click', open);
+      if (previewHead) previewHead.appendChild(trigger);
+      else layout.prepend(trigger);
+    }
 
     layout.querySelectorAll('.panel .card-head button').forEach((button) => {
       button.addEventListener('click', open);
