@@ -83,7 +83,12 @@
       if (!raw) return null;
       const s = JSON.parse(raw);
       if (s && Array.isArray(s.classes) && s.classes.length) {
-        return { classes: s.classes.map(normalize), currentId: s.currentId };
+        // Supprime les anciennes données de démonstration sans toucher aux classes réelles.
+        const classes = s.classes.filter((c) => String(c.name || '').trim().toLowerCase() !== 'classe exemple');
+        if (classes.length) {
+          const currentId = classes.some((c) => c.id === s.currentId) ? s.currentId : classes[0].id;
+          return { classes: classes.map(normalize), currentId };
+        }
       }
     } catch (e) { /* stockage indisponible ou illisible */ }
     return null;
