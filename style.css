@@ -734,3 +734,38 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #b5c9e2; outline-
   .topbar { display: none !important; }
   .home { display: none !important; }
 }
+
+
+/* ---------- Vue Classes : liste des classes puis liste des élèves ---------- */
+#view-classes .classes-main-list,
+#view-classes .class-preview { width: 100%; max-width: 100%; }
+#view-classes .classes-main-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px; margin-bottom: 18px;
+}
+#view-classes .classes-main-toolbar h3 { margin: 0; font-size: 1.1rem; color: #17365d; }
+#view-classes .classes-table-wrap { width: 100%; overflow-x: auto; }
+#view-classes .classes-table {
+  width: 100%; border-collapse: collapse; background: #fff;
+  border: 1px solid #dce3ec; font-size: .92rem;
+}
+#view-classes .classes-table th,
+#view-classes .classes-table td {
+  padding: 13px 12px; text-align: left; border-bottom: 1px solid #e5eaf1;
+}
+#view-classes .classes-table th {
+  background: #f3f6fa; color: #52647b; font-size: .76rem;
+  text-transform: uppercase; letter-spacing: .04em; white-space: nowrap;
+}
+#view-classes .classes-table tbody tr:last-child td { border-bottom: 0; }
+#view-classes .classes-table tbody tr:hover { background: #f8fafd; }
+#view-classes .class-preview h3 { margin: 8px 0 16px; }
+#view-classes .class-preview h4 { margin: 22px 0 8px; color: #17365d; }
+#view-classes .class-preview .student-list { counter-reset: student; }
+#view-classes .class-preview .student-list li { padding: 10px 12px; }
+@media (max-width: 600px) {
+  #view-classes .classes-main-toolbar { align-items: stretch; }
+  #view-classes .classes-main-toolbar .btn { width: 100%; }
+  #view-classes .classes-table th,
+  #view-classes .classes-table td { padding: 10px 8px; }
+}
