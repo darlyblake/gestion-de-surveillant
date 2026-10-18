@@ -25,7 +25,7 @@
       id: uid(),
       name: '',
       year: `${y}-${y + 1}`,
-      school: base && base.school ? base.school : DEFAULT_SCHOOL,
+      school: base && base.school ? base.school : (PT.getSchoolName ? PT.getSchoolName() : DEFAULT_SCHOOL),
       students: '',
       sort: false,
       createdAt: new Date().toISOString()
@@ -102,7 +102,7 @@
     if (!c) {
       $('cls-name').value = '';
       $('cls-year').value = '';
-      $('cls-school').value = DEFAULT_SCHOOL;
+      $('cls-school').value = PT.getSchoolName ? PT.getSchoolName() : DEFAULT_SCHOOL;
       $('cls-students').value = '';
       $('cls-sort').checked = false;
       $('cls-add-name').value = '';
