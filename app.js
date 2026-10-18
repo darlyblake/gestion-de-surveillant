@@ -26,7 +26,7 @@
 
     $('home').hidden = key !== 'home';
     Object.keys(VIEWS).forEach((k) => { $(VIEWS[k]).hidden = k !== key; });
-    $('btn-print').hidden = key === 'home';
+    $('btn-print').hidden = key === 'home' || key === 'classes';
     $('view-title').textContent = TITLES[key] || '';
     document.querySelectorAll('.sidebar-nav a[data-nav]').forEach((link) => {
       const active = link.dataset.nav === key;
