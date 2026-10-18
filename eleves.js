@@ -419,6 +419,7 @@
     if (PT.setActiveClassId) PT.setActiveClassId(current().linkedClassId);
     save();
     fillForm();
+    refresh();
   });
 
   $('class-list').addEventListener('click', (e) => {
