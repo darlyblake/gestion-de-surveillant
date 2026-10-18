@@ -769,3 +769,5 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #b5c9e2; outline-
   #view-classes .classes-table th,
   #view-classes .classes-table td { padding: 10px 8px; }
 }
+
+#view-classes .sheets { width: 100%; margin: 0; }
