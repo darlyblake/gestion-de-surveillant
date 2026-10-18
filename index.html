@@ -1,22 +1,41 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pointage scolaire</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0e6a5b">
+  <meta name="theme-color" content="#17365d">
   <meta name="description" content="Application de gestion scolaire : listes de présence, billets d'entrée/sortie, exclusions">
   <style id="page-style"></style>
 </head>
 <body>
-
+<div class="app-shell">
+  <aside class="app-sidebar" id="app-sidebar" aria-label="Navigation principale">
+    <a class="sidebar-brand" href="#home" aria-label="Accueil Gestion de surveillant">
+      <span class="sidebar-mark" aria-hidden="true">GS</span>
+      <span class="sidebar-brand-copy"><strong>Gestion scolaire</strong><small>Espace surveillant</small></span>
+    </a>
+    <div class="sidebar-caption">MENU PRINCIPAL</div>
+    <nav class="sidebar-nav">
+      <a href="#home" data-nav="home"><span class="nav-symbol" aria-hidden="true">⌂</span><span>Accueil</span></a>
+      <a href="#classes" data-nav="classes"><span class="nav-symbol" aria-hidden="true">▤</span><span>Classes et élèves</span></a>
+      <a href="#eleves" data-nav="eleves"><span class="nav-symbol" aria-hidden="true">☷</span><span>Présence des élèves</span></a>
+      <a href="#enseignants" data-nav="enseignants"><span class="nav-symbol" aria-hidden="true">◷</span><span>Pointage enseignants</span></a>
+      <a href="#billets" data-nav="billets"><span class="nav-symbol" aria-hidden="true">▧</span><span>Billets d'entrée / sortie</span></a>
+      <a href="#exclusions" data-nav="exclusions"><span class="nav-symbol" aria-hidden="true">⊘</span><span>Exclusions</span></a>
+      <a href="#notes" data-nav="notes"><span class="nav-symbol" aria-hidden="true">≡</span><span>Relevés de notes</span></a>
+    </nav>
+    <div class="sidebar-footer"><span class="status-dot" aria-hidden="true"></span><span>Données enregistrées sur cet appareil</span></div>
+  </aside>
+  <div class="app-main">
 <header class="topbar">
+  <button type="button" class="menu-toggle" id="btn-menu" aria-label="Ouvrir le menu" aria-controls="app-sidebar" aria-expanded="false"><span></span><span></span><span></span></button>
   <div class="brand-row">
     <a class="brand" href="#" aria-label="Retour à l'accueil">
       <span class="mark" aria-hidden="true"></span>
-      <h1>Pointage</h1>
+      <h1>Gestion scolaire</h1>
     </a>
     <span id="view-title" class="view-title"></span>
   </div>
@@ -657,6 +676,9 @@
 <script src="exclusions.js"></script>
 <script src="notes.js"></script>
 <script src="app.js"></script>
+
+</div><!-- /.app-main -->
+</div><!-- /.app-shell -->
 
 <!-- Service Worker Registration -->
 <script>
