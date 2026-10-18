@@ -21,7 +21,7 @@
     <nav class="sidebar-nav">
       <a href="#home" data-nav="home"><span class="nav-symbol" aria-hidden="true">⌂</span><span>Accueil</span></a>
       <a href="#classes" data-nav="classes"><span class="nav-symbol" aria-hidden="true">▤</span><span>Classes et élèves</span></a>
-      <a href="#eleves" data-nav="eleves"><span class="nav-symbol" aria-hidden="true">☷</span><span>Présence des élèves</span></a>
+      <a href="#eleves" data-nav="eleves"><span class="nav-symbol" aria-hidden="true">☷</span><span>Fiche d’appel des élèves</span></a>
       <a href="#enseignants" data-nav="enseignants"><span class="nav-symbol" aria-hidden="true">◷</span><span>Pointage enseignants</span></a>
       <a href="#billets" data-nav="billets"><span class="nav-symbol" aria-hidden="true">▧</span><span>Billets d'entrée / sortie</span></a>
       <a href="#exclusions" data-nav="exclusions"><span class="nav-symbol" aria-hidden="true">⊘</span><span>Exclusions</span></a>
@@ -67,7 +67,7 @@
           <rect x="1.5" y="1.5" width="69" height="49" rx="3" fill="none" stroke="currentColor" stroke-width="3"/>
           <path d="M1.5 14h69M1.5 26h69M1.5 38h69M16 1.5v49M34 1.5v49M44 1.5v49M54 1.5v49" fill="none" stroke="currentColor" stroke-width="2"/>
         </svg>
-        <span class="doc-title">Liste de présence</span>
+        <span class="doc-title">Fiche d’appel des élèves</span>
         <span class="doc-text">La feuille d'appel des élèves : une classe, ses élèves, et une colonne par heure de cours pour chaque jour.</span>
         <span class="doc-meta" id="home-eleves"></span>
       </a>
@@ -198,8 +198,8 @@
 
     <section class="card">
       <div class="card-head">
-        <h2>Mes classes</h2>
-        <button type="button" id="btn-new" class="btn">Nouvelle classe</button>
+        <h2>Fiches d’appel</h2>
+        <button type="button" id="btn-new" class="btn">Nouvelle fiche</button>
       </div>
       <ul id="class-list" class="class-list"></ul>
       <p id="saved" class="saved" role="status"></p>
@@ -241,7 +241,7 @@
         <p class="hint">Les élèves sont chargés depuis la classe sélectionnée</p>
       </div>
 
-      <h2 class="sub-title">La semaine</h2>
+      <h2 class="sub-title">Période de la fiche</h2>
 
       <div class="field">
         <label for="c-start">Semaine affichée</label>
@@ -271,7 +271,7 @@
       </div>
       <p class="hint">Chaque jour reçoit une colonne par heure : 1re h, 2e h, 3e h…</p>
 
-      <h2 class="sub-title">La feuille</h2>
+      <h2 class="sub-title">Mise en page du document</h2>
 
       <div class="grid2">
         <div class="field">
@@ -288,7 +288,7 @@
       </div>
       <p class="hint">30 élèves tiennent sur une feuille en portrait, 18 en paysage. Au-delà, la liste continue sur la feuille suivante.</p>
 
-      <h2 class="sub-title">L'impression</h2>
+      <h2 class="sub-title">Impression</h2>
 
       <div class="field">
         <label for="c-weeks">Semaines à imprimer</label>
@@ -296,14 +296,14 @@
       </div>
       <p class="hint">À partir de la semaine affichée. Avec 4, vous obtenez 4 feuilles : la semaine affichée et les 3 suivantes.</p>
 
-      <button type="button" id="btn-delete" class="btn danger">Supprimer cette classe</button>
+      <button type="button" id="btn-delete" class="btn danger">Supprimer cette fiche</button>
     </form>
 
   </aside>
 
-  <section class="preview" id="preview" aria-label="Aperçu de la feuille">
+  <section class="preview" id="preview" aria-label="Aperçu de la fiche d’appel imprimable">
     <div class="preview-head">
-      <h2>Aperçu</h2>
+      <h2>Aperçu de la fiche imprimable</h2>
       <p id="summary" class="summary"></p>
     </div>
     <p id="warn" class="warn" hidden></p>
