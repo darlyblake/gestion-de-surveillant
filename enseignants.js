@@ -45,9 +45,7 @@
   }
 
   function sampleClass() {
-    const c = newClass();
-    c.name = 'Classe exemple';
-    return c;
+    return newClass();
   }
 
   function load() {
