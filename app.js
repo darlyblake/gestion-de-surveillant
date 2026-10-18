@@ -31,7 +31,7 @@
       if (active) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
     });
-    document.title = key === 'home' ? 'Pointage scolaire' : `${TITLES[key]} – Pointage scolaire`;
+    document.title = key === 'home' ? 'Gestion scolaire' : `${TITLES[key]} – Gestion scolaire`;
 
     if (key === 'home') {
       $('page-style').textContent = '';
@@ -57,6 +57,16 @@
       });
     });
   }
+
+  document.body.addEventListener('click', (event) => {
+    if (event.target === document.body && document.body.classList.contains('sidebar-open')) {
+      document.body.classList.remove('sidebar-open');
+      if (menuButton) {
+        menuButton.setAttribute('aria-expanded', 'false');
+        menuButton.setAttribute('aria-label', 'Ouvrir le menu');
+      }
+    }
+  });
 
   $('btn-print').addEventListener('click', () => window.print());
   window.addEventListener('hashchange', route);
