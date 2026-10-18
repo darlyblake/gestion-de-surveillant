@@ -21,7 +21,7 @@
   function newClass(base) {
     return {
       id: uid(),
-      linkedClassId: null, // ID de la classe depuis Classes centralisées
+      linkedClassId: PT.getActiveClassId ? PT.getActiveClassId() : null, // classe partagée
       billets: []
     };
   }
@@ -109,6 +109,7 @@
 
   function fillForm() {
     const c = current();
+    if (c && !c.linkedClassId && PT.getActiveClassId) c.linkedClassId = PT.getActiveClassId();
     const centralClasses = PT.views.classes ? PT.views.classes.getAllClasses() : [];
     
     // Remplir le sélecteur de classes
@@ -286,6 +287,8 @@
 
   function select(id) {
     state.currentId = id;
+    const chosen = current();
+    if (chosen && chosen.linkedClassId && PT.setActiveClassId) PT.setActiveClassId(chosen.linkedClassId);
     save();
     disarmDelete();
     fillForm();
@@ -303,6 +306,7 @@
 
   $('b-class-select').addEventListener('change', () => {
     readForm();
+    if (PT.setActiveClassId) PT.setActiveClassId(current().linkedClassId);
     save();
     fillForm();
   });
@@ -456,9 +460,33 @@
     }
   }
 
+  function syncActiveClass() {
+    const classId = PT.getActiveClassId ? PT.getActiveClassId() : null;
+    if (!classId) return;
+    const records = state.classes;
+    const matching = records.find((item) => item.linkedClassId === classId);
+    if (matching) {
+      state.currentId = matching.id;
+    } else {
+      const active = current();
+      if (active && !active.linkedClassId) {
+        active.linkedClassId = classId;
+      } else {
+        const next = newClass(active);
+        next.linkedClassId = classId;
+        records.push(next);
+        state.currentId = next.id;
+      }
+      save();
+    }
+    fillForm();
+    refresh();
+  }
+
   PT.views.billets = {
     show() {
-      if (!booted) boot(); else renderHistory();
+      if (!booted) boot();
+      syncActiveClass();
     }
   };
 })();
