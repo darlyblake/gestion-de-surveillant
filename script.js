@@ -73,7 +73,7 @@
     return c;
   }
 
-  function sampleClass() {
+  function createInitialClass() {
     return newClass();
   }
 
@@ -493,7 +493,7 @@
     state = loaded;
     if (!state.classes.some((c) => c.id === state.currentId)) state.currentId = state.classes[0].id;
   } else {
-    const c = sampleClass();
+    const c = createInitialClass();
     state = { classes: [c], currentId: c.id };
   }
   fillForm();
