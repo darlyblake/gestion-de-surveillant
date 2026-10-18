@@ -385,6 +385,8 @@
     if (loaded) {
       state = loaded;
       if (!state.classes.some((c) => c.id === state.currentId)) state.currentId = state.classes[0].id;
+      const sharedId = PT.getActiveClassId ? PT.getActiveClassId() : null;
+      if (sharedId && state.classes.some((c) => c.id === sharedId)) state.currentId = sharedId;
     } else {
       state = { classes: [], currentId: null, showingStudents: false };
     }
