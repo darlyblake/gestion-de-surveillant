@@ -1,0 +1,1754 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pointage scolaire</title>
+<style>
+/* Disposition : panneau de saisie à gauche, une feuille A4 en aperçu à droite.
+   Sur téléphone, le panneau passe au-dessus de l'aperçu. */
+
+:root {
+  --bg: #eceff0;
+  --panel: #ffffff;
+  --ink: #15262b;
+  --muted: #566a70;
+  --line: #d2dadc;
+  --accent: #0e6a5b;
+  --accent-ink: #ffffff;
+  --accent-soft: #dcefea;
+  --danger: #b3261e;
+  --warn-bg: #fff3d6;
+  --warn-ink: #6b4a00;
+  --shadow: 0 1px 2px rgba(10, 30, 35, .08), 0 10px 28px rgba(10, 30, 35, .10);
+  --paper: #ffffff;
+  --paper-ink: #111111;
+  --paper-head: #e8e8e8;
+  --paper-blue: #1f4e79;
+  --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1618;
+    --panel: #162125;
+    --ink: #e5eeef;
+    --muted: #9db1b5;
+    --line: #29383c;
+    --accent: #4cc3ad;
+    --accent-ink: #06211c;
+    --accent-soft: #1b3a35;
+    --danger: #ff8f85;
+    --warn-bg: #3a2f10;
+    --warn-ink: #f3d78a;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 28px rgba(0, 0, 0, .45);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0e1618;
+  --panel: #162125;
+  --ink: #e5eeef;
+  --muted: #9db1b5;
+  --line: #29383c;
+  --accent: #4cc3ad;
+  --accent-ink: #06211c;
+  --accent-soft: #1b3a35;
+  --danger: #ff8f85;
+  --warn-bg: #3a2f10;
+  --warn-ink: #f3d78a;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 28px rgba(0, 0, 0, .45);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+/* Une page ou un bloc marqué « hidden » disparaît même si une règle lui donne un affichage */
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.45 var(--font);
+}
+
+h1, h2 { margin: 0; }
+
+/* ---------- Barre du haut ---------- */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+
+.brand-row { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; color: inherit; text-decoration: none; }
+.brand h1 { font-size: 1.1rem; font-weight: 650; letter-spacing: .01em; }
+.view-title { color: var(--muted); font-size: .95rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.view-title:not(:empty)::before { content: "/"; margin-right: 12px; color: var(--line); }
+@media (max-width: 520px) { .view-title { display: none; } }
+
+/* Petit cahier d'appel : une grille de cases */
+.mark {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  background:
+    linear-gradient(var(--accent), var(--accent)) 4px 5px / 6px 2px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) 12px 5px / 6px 2px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) 4px 10px / 6px 2px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) 12px 10px / 6px 2px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) 4px 15px / 6px 2px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) 12px 15px / 6px 2px no-repeat;
+  border: 2px solid var(--accent);
+  flex: none;
+}
+
+/* ---------- Disposition ---------- */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+}
+
+.panel { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.card h2 { font-size: 1rem; font-weight: 650; }
+.card .sub-title {
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: .8rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+}
+
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+
+/* ---------- Formulaire ---------- */
+
+.field { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; border: 0; min-width: 0; }
+.field label, .field legend {
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0;
+}
+.label-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.count { font-size: .85rem; color: var(--accent); font-weight: 600; }
+
+input[type="text"], input[type="number"], input[type="date"], select, textarea {
+  width: 100%;
+  min-width: 0;
+  font: inherit;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 9px 10px;
+}
+textarea { resize: vertical; min-height: 140px; line-height: 1.5; }
+
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 420px) { .grid2 { grid-template-columns: minmax(0, 1fr); } }
+
+.field .check { display: flex; align-items: center; gap: 8px; font-size: .9rem; text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--ink); }
+
+.hint { margin: -6px 0 0; font-size: .82rem; color: var(--muted); }
+
+.add-row, .week-nav { display: flex; gap: 8px; align-items: stretch; }
+.add-row .btn, .week-nav .btn { flex: none; }
+
+.row-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.saved { margin: 0; font-size: .82rem; color: var(--muted); min-height: 1.2em; }
+.saved.ok { color: var(--accent); }
+.saved.bad { color: var(--danger); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips label { position: relative; text-transform: none; letter-spacing: 0; font-weight: 500; font-size: .9rem; color: var(--ink); }
+.chips input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.chips span {
+  display: inline-block;
+  padding: 7px 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+}
+.chips input:checked + span {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.chips input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- Boutons ---------- */
+
+.btn {
+  font: inherit;
+  font-weight: 600;
+  font-size: .9rem;
+  padding: 8px 14px;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+}
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.primary:disabled { opacity: .45; cursor: not-allowed; filter: none; }
+.btn.danger { color: var(--danger); align-self: flex-start; }
+.btn.danger:hover { border-color: var(--danger); }
+.btn.danger.armed { background: var(--danger); border-color: var(--danger); color: var(--panel); }
+
+/* ---------- Liste des classes ---------- */
+
+.class-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.class-list button {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  text-align: left;
+  font: inherit;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+}
+.class-list button:hover { border-color: var(--accent); }
+.class-list button[aria-current="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.class-list .nm { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.class-list .ct { font-size: .82rem; color: var(--muted); white-space: nowrap; }
+
+/* ---------- Aperçu ---------- */
+
+.preview { min-width: 0; overflow-x: auto; }
+.preview-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-bottom: 14px; }
+.preview-head h2 { font-size: 1rem; font-weight: 650; }
+.summary { margin: 0; color: var(--muted); font-size: .9rem; }
+.warn {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--warn-bg);
+  color: var(--warn-ink);
+  font-size: .9rem;
+}
+.empty {
+  margin: 0;
+  padding: 28px 20px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.sheets {
+  width: max-content;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Les feuilles à imprimer sont préparées ici ; elles n'apparaissent qu'à l'impression */
+.print-area { display: none; }
+
+/* ---------- Feuille de pointage (papier) ---------- */
+
+.sheet {
+  width: 210mm;
+  padding: 10mm;
+  background: var(--paper);
+  color: var(--paper-ink);
+  font-family: Arial, Helvetica, sans-serif;
+  box-shadow: var(--shadow);
+}
+.landscape .sheet { width: 297mm; }
+
+.sheet h2 { text-align: center; font-size: 15pt; letter-spacing: .05em; font-weight: 700; }
+
+.sheet-school { margin: 1.5mm 0 0; text-align: center; font-size: 9pt; }
+
+.sheet-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8mm;
+  margin: 4mm 0 3mm;
+  font-size: 10.5pt;
+}
+
+table.pt { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 10pt; }
+.pt th, .pt td { border: .3mm solid #000; padding: 0 1.5mm; }
+.pt th {
+  background: var(--paper-head);
+  height: 6.5mm;
+  font-size: 7.5pt;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  font-weight: 700;
+}
+.pt th.sub { font-size: 6pt; padding: 0; text-transform: none; letter-spacing: 0; }
+.pt td { height: var(--row, 7mm); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.pt td.n { text-align: center; font-size: 9pt; padding: 0; }
+.pt td.name { font-size: 9.5pt; }
+
+.sheet-foot { display: flex; justify-content: space-between; gap: 8mm; margin-top: 4mm; font-size: 10pt; }
+.sheet-page {
+  margin-top: 3mm;
+  padding-top: 2mm;
+  border-top: .3mm solid #000;
+  text-align: center;
+  font-size: 8.5pt;
+}
+
+/* ---------- Accueil ---------- */
+
+.home { padding: 40px 16px 60px; }
+.home-inner { max-width: 900px; margin: 0 auto; }
+.home h2 { font-size: 1.5rem; font-weight: 650; text-wrap: balance; }
+.home-sub { margin: 8px 0 28px; max-width: 60ch; color: var(--muted); }
+
+.home-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 640px) { .home-grid { grid-template-columns: minmax(0, 1fr); } }
+
+.doc-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px;
+  min-width: 0;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.doc-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+.doc-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.doc-icon { width: 72px; height: 52px; margin-bottom: 6px; color: var(--accent); }
+.doc-title { font-size: 1.15rem; font-weight: 650; }
+.doc-text { color: var(--muted); }
+.doc-meta { margin-top: auto; padding-top: 6px; font-size: .85rem; font-weight: 600; color: var(--accent); }
+
+/* ---------- Ajout d'un enseignant (nom + matière) ---------- */
+
+.add-stack { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 8px; }
+@media (max-width: 420px) { .add-stack { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- Feuille des enseignants (tableau du modèle PDF) ---------- */
+
+.sheet.prof h2 { color: var(--paper-blue); font-size: 16pt; letter-spacing: .02em; }
+.sheet.prof .sheet-school { font-style: italic; color: #555; font-size: 7.5pt; margin: 0 0 1mm; }
+
+.prof-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8mm;
+  margin: 3mm 0 2mm;
+  font-size: 9pt;
+}
+.prof-meta .horaires { font-weight: 700; }
+
+.ptp th {
+  background: var(--paper-blue);
+  color: #fff;
+  height: 12mm;
+  font-size: 7.5pt;
+  line-height: 1.25;
+  border: .3mm solid #fff;
+}
+.ptp td { font-size: 9pt; }
+.ptp td.n { font-size: 8.5pt; }
+.ptp td.name { font-size: 9pt; }
+
+/* ---------- Impression ---------- */
+
+@media print {
+  body { background: #fff !important; }
+  .topbar, .panel, .preview, .home { display: none !important; }
+  .layout { display: block; padding: 0; max-width: none; }
+  .print-area { display: block; }
+  .print-area .sheet, .print-area.landscape .sheet {
+    width: auto;
+    padding: 0;
+    box-shadow: none;
+    break-after: page;
+    page-break-after: always;
+  }
+  .print-area .sheet:last-child { break-after: auto; page-break-after: auto; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+</style>
+<style id="page-style"></style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand-row">
+    <a class="brand" href="#" aria-label="Retour à l'accueil">
+      <span class="mark" aria-hidden="true"></span>
+      <h1>Pointage</h1>
+    </a>
+    <span id="view-title" class="view-title"></span>
+  </div>
+  <button type="button" id="btn-print" class="btn primary" hidden>Imprimer</button>
+</header>
+
+<!-- ===================== Accueil ===================== -->
+<main class="home" id="home">
+  <div class="home-inner">
+    <h2>Quel document voulez-vous préparer ?</h2>
+    <p class="home-sub">Vos classes sont enregistrées sur cet appareil. Vous pouvez y revenir pour ajouter un nom ou imprimer une nouvelle semaine.</p>
+
+    <div class="home-grid">
+      <a class="doc-card" href="#eleves">
+        <svg class="doc-icon" viewBox="0 0 72 52" aria-hidden="true">
+          <rect x="1.5" y="1.5" width="69" height="49" rx="3" fill="none" stroke="currentColor" stroke-width="3"/>
+          <path d="M1.5 14h69M1.5 26h69M1.5 38h69M16 1.5v49M34 1.5v49M44 1.5v49M54 1.5v49" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <span class="doc-title">Liste de présence</span>
+        <span class="doc-text">La feuille d'appel des élèves : une classe, ses élèves, et une colonne par heure de cours pour chaque jour.</span>
+        <span class="doc-meta" id="home-eleves"></span>
+      </a>
+
+      <a class="doc-card" href="#enseignants">
+        <svg class="doc-icon" viewBox="0 0 72 52" aria-hidden="true">
+          <rect x="1.5" y="1.5" width="69" height="49" rx="3" fill="none" stroke="currentColor" stroke-width="3"/>
+          <rect x="1.5" y="1.5" width="69" height="13" rx="3" fill="currentColor"/>
+          <path d="M1.5 26h69M1.5 38h69M12 14v36M30 14v36M46 14v36M58 14v36" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <span class="doc-title">Pointage des enseignants</span>
+        <span class="doc-text">La feuille de pointage des professeurs : date, matière, heure de début et de fin, signature et observations.</span>
+        <span class="doc-meta" id="home-enseignants"></span>
+      </a>
+    </div>
+  </div>
+</main>
+
+<!-- ===================== Liste de présence (élèves) ===================== -->
+<main class="layout" id="view-eleves" hidden>
+
+  <aside class="panel">
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Mes classes</h2>
+        <button type="button" id="btn-new" class="btn">Nouvelle classe</button>
+      </div>
+      <ul id="class-list" class="class-list"></ul>
+      <p id="saved" class="saved" role="status"></p>
+      <div class="row-btns">
+        <button type="button" id="btn-export" class="btn">Sauvegarder dans un fichier</button>
+        <button type="button" id="btn-import" class="btn">Restaurer</button>
+        <input type="file" id="file-import" accept=".json,application/json" hidden>
+      </div>
+    </section>
+
+    <form id="class-form" class="card" autocomplete="off">
+      <h2>La classe</h2>
+
+      <div class="field">
+        <label for="c-name">Nom de la classe</label>
+        <input id="c-name" type="text" placeholder="Ex. 6e A">
+      </div>
+
+      <div class="field">
+        <label for="c-year">Année scolaire</label>
+        <input id="c-year" type="text" placeholder="Ex. 2026-2027">
+      </div>
+
+      <div class="field">
+        <label for="c-school">Établissement</label>
+        <input id="c-school" type="text">
+      </div>
+
+      <div class="field">
+        <div class="label-row">
+          <label for="c-students">Élèves</label>
+          <span id="count" class="count"></span>
+        </div>
+        <textarea id="c-students" rows="10" placeholder="Collez ici les noms, un élève par ligne"></textarea>
+        <label class="check"><input type="checkbox" id="c-sort"> Classer par ordre alphabétique</label>
+      </div>
+
+      <div class="field">
+        <label for="add-name">Ajouter un élève</label>
+        <div class="add-row">
+          <input id="add-name" type="text" placeholder="NOM Prénom">
+          <button type="button" id="btn-add" class="btn">Ajouter</button>
+        </div>
+      </div>
+
+      <h2 class="sub-title">La semaine</h2>
+
+      <div class="field">
+        <label for="c-start">Semaine affichée</label>
+        <div class="week-nav">
+          <button type="button" id="wk-prev" class="btn" aria-label="Semaine précédente">◀</button>
+          <input id="c-start" type="date">
+          <button type="button" id="wk-next" class="btn" aria-label="Semaine suivante">▶</button>
+        </div>
+      </div>
+      <p id="week-hint" class="hint"></p>
+
+      <fieldset class="field">
+        <legend>Jours à pointer</legend>
+        <div class="chips">
+          <label><input type="checkbox" name="day" value="1"><span>Lun</span></label>
+          <label><input type="checkbox" name="day" value="2"><span>Mar</span></label>
+          <label><input type="checkbox" name="day" value="3"><span>Mer</span></label>
+          <label><input type="checkbox" name="day" value="4"><span>Jeu</span></label>
+          <label><input type="checkbox" name="day" value="5"><span>Ven</span></label>
+          <label><input type="checkbox" name="day" value="6"><span>Sam</span></label>
+        </div>
+      </fieldset>
+
+      <div class="field">
+        <label for="c-hours">Heures de cours par jour</label>
+        <input id="c-hours" type="number" min="1" max="8" inputmode="numeric">
+      </div>
+      <p class="hint">Chaque jour reçoit une colonne par heure : 1re h, 2e h, 3e h…</p>
+
+      <h2 class="sub-title">La feuille</h2>
+
+      <div class="grid2">
+        <div class="field">
+          <label for="c-orient">Format</label>
+          <select id="c-orient">
+            <option value="portrait">A4 portrait</option>
+            <option value="landscape">A4 paysage</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="c-perpage">Élèves par feuille</label>
+          <input id="c-perpage" type="number" min="5" max="60" inputmode="numeric">
+        </div>
+      </div>
+      <p class="hint">30 élèves tiennent sur une feuille en portrait, 18 en paysage. Au-delà, la liste continue sur la feuille suivante.</p>
+
+      <h2 class="sub-title">L'impression</h2>
+
+      <div class="field">
+        <label for="c-weeks">Semaines à imprimer</label>
+        <input id="c-weeks" type="number" min="1" max="40" inputmode="numeric">
+      </div>
+      <p class="hint">À partir de la semaine affichée. Avec 4, vous obtenez 4 feuilles : la semaine affichée et les 3 suivantes.</p>
+
+      <button type="button" id="btn-delete" class="btn danger">Supprimer cette classe</button>
+    </form>
+
+  </aside>
+
+  <section class="preview" id="preview" aria-label="Aperçu de la feuille">
+    <div class="preview-head">
+      <h2>Aperçu</h2>
+      <p id="summary" class="summary"></p>
+    </div>
+    <p id="warn" class="warn" hidden></p>
+    <p id="empty" class="empty" hidden></p>
+    <div id="sheets" class="sheets"></div>
+  </section>
+
+  <div id="print-area" class="print-area" aria-hidden="true"></div>
+
+</main>
+
+<!-- ===================== Pointage des enseignants ===================== -->
+<main class="layout" id="view-enseignants" hidden>
+
+  <aside class="panel">
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Mes classes</h2>
+        <button type="button" id="t-new" class="btn">Nouvelle classe</button>
+      </div>
+      <ul id="t-class-list" class="class-list"></ul>
+      <p id="t-saved" class="saved" role="status"></p>
+      <div class="row-btns">
+        <button type="button" id="t-export" class="btn">Sauvegarder dans un fichier</button>
+        <button type="button" id="t-import" class="btn">Restaurer</button>
+        <input type="file" id="t-file" accept=".json,application/json" hidden>
+      </div>
+    </section>
+
+    <form id="t-form" class="card" autocomplete="off">
+      <h2>La classe</h2>
+
+      <div class="field">
+        <label for="t-name">Nom de la classe</label>
+        <input id="t-name" type="text" placeholder="Ex. 6e A">
+      </div>
+
+      <div class="field">
+        <label for="t-school">Établissement</label>
+        <input id="t-school" type="text">
+      </div>
+
+      <div class="field">
+        <div class="label-row">
+          <label for="t-teachers">Enseignants</label>
+          <span id="t-count" class="count"></span>
+        </div>
+        <textarea id="t-teachers" rows="10" placeholder="Collez ici un enseignant par ligne, avec sa matière après un point-virgule&#10;Ex. MBOUMBA Jean ; Mathématiques"></textarea>
+        <label class="check"><input type="checkbox" id="t-sort"> Classer par ordre alphabétique</label>
+      </div>
+      <p class="hint">Les colonnes copiées depuis Excel fonctionnent aussi : nom, puis matière.</p>
+
+      <div class="field">
+        <label for="t-add-name">Ajouter un enseignant</label>
+        <div class="add-stack">
+          <input id="t-add-name" type="text" placeholder="NOM Prénom">
+          <input id="t-add-subject" type="text" placeholder="Matière">
+          <button type="button" id="t-add" class="btn">Ajouter</button>
+        </div>
+      </div>
+
+      <h2 class="sub-title">La semaine</h2>
+
+      <div class="field">
+        <label for="t-start">Semaine affichée</label>
+        <div class="week-nav">
+          <button type="button" id="t-prev" class="btn" aria-label="Semaine précédente">◀</button>
+          <input id="t-start" type="date">
+          <button type="button" id="t-next" class="btn" aria-label="Semaine suivante">▶</button>
+        </div>
+      </div>
+      <p id="t-hint" class="hint"></p>
+
+      <label class="check"><input type="checkbox" id="t-saturday"> La semaine va jusqu'au samedi</label>
+
+      <h2 class="sub-title">La feuille</h2>
+
+      <div class="field">
+        <label for="t-perpage">Lignes par feuille</label>
+        <input id="t-perpage" type="number" min="5" max="24" inputmode="numeric">
+      </div>
+      <p class="hint">14 lignes comme sur votre modèle. Au-delà du nombre d'enseignants, les lignes restantes sont laissées vides.</p>
+
+      <label class="check"><input type="checkbox" id="t-pad"> Compléter la feuille avec des lignes vides</label>
+
+      <h2 class="sub-title">L'impression</h2>
+
+      <div class="field">
+        <label for="t-weeks">Semaines à imprimer</label>
+        <input id="t-weeks" type="number" min="1" max="40" inputmode="numeric">
+      </div>
+      <p class="hint">À partir de la semaine affichée. Avec 4, vous obtenez 4 feuilles : la semaine affichée et les 3 suivantes.</p>
+
+      <button type="button" id="t-delete" class="btn danger">Supprimer cette classe</button>
+    </form>
+
+  </aside>
+
+  <section class="preview" id="t-preview" aria-label="Aperçu de la feuille">
+    <div class="preview-head">
+      <h2>Aperçu</h2>
+      <p id="t-summary" class="summary"></p>
+    </div>
+    <p id="t-empty" class="empty" hidden></p>
+    <div id="t-sheets" class="sheets landscape"></div>
+  </section>
+
+  <div id="t-print-area" class="print-area landscape" aria-hidden="true"></div>
+
+</main>
+
+<script>
+/* Fonctions partagées par les deux documents (élèves et enseignants). */
+window.PT = (() => {
+  'use strict';
+
+  const $ = (id) => document.getElementById(id);
+  const pad = (n) => String(n).padStart(2, '0');
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  const uid = () => 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const plural = (n, one, many) => (n > 1 ? many : one);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (ch) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]
+  ));
+
+  /* Dates : calcul en heure locale, sans décalage de fuseau */
+  function parseISO(s) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || '');
+    return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
+  }
+  const toISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+  const mondayOf = (d) => addDays(d, -((d.getDay() + 6) % 7));
+  const fmt = (d) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+  const fmtShort = (d) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}`;
+
+  /* Message d'état (« Enregistré à 07:12 », erreurs de sauvegarde…) */
+  function setStatus(id, text, kind) {
+    const el = $(id);
+    el.textContent = text;
+    el.className = 'saved' + (kind ? ' ' + kind : '');
+  }
+
+  /* Télécharge un fichier texte (sauvegarde JSON) */
+  function download(filename, text) {
+    const blob = new Blob([text], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+
+  /* Lit la liste des classes enregistrées sous une clé (sert à l'accueil) */
+  function readClasses(key) {
+    try {
+      const s = JSON.parse(localStorage.getItem(key));
+      return s && Array.isArray(s.classes) ? s.classes : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  return {
+    $, pad, clamp, uid, plural, esc,
+    parseISO, toISO, addDays, mondayOf, fmt, fmtShort,
+    setStatus, download, readClasses,
+    views: {}
+  };
+})();
+
+</script>
+<script>
+/* Document « Liste de présence » : feuille d'appel des élèves. */
+(() => {
+  'use strict';
+
+  const {
+    $, pad, clamp, uid, plural, esc,
+    parseISO, toISO, addDays, mondayOf, fmt, fmtShort, setStatus, download
+  } = PT;
+
+  const KEY = 'pointage-eleves.v1';
+  const APP = 'pointage-eleves';
+  const DEFAULT_SCHOOL = 'Complexe Scolaire La Réussite Owendo – B.P. 46209';
+  const DAYS = [
+    { n: 1, short: 'Lun' }, { n: 2, short: 'Mar' }, { n: 3, short: 'Mer' },
+    { n: 4, short: 'Jeu' }, { n: 5, short: 'Ven' }, { n: 6, short: 'Sam' }
+  ];
+
+  const say = (text, kind) => setStatus('saved', text, kind);
+
+  /* ---------- Données ---------- */
+
+  let state = { classes: [], currentId: null };
+  let booted = false;
+
+  function newClass(base) {
+    const now = new Date();
+    const y = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
+    return {
+      id: uid(),
+      name: '',
+      year: `${y}-${y + 1}`,
+      school: base && base.school ? base.school : DEFAULT_SCHOOL,
+      students: '',
+      sort: false,
+      start: toISO(mondayOf(now)),
+      weeks: 1,
+      days: [1, 2, 3, 4, 5],
+      hours: 3,
+      orient: 'portrait',
+      perPage: 30
+    };
+  }
+
+  // Complète une classe enregistrée (ou importée) avec les réglages manquants
+  function normalize(raw) {
+    const base = newClass();
+    const c = Object.assign({}, base, raw || {});
+    if (!c.id) c.id = base.id;
+    if (!Array.isArray(c.days)) c.days = base.days;
+    c.days = c.days.map(Number).filter((n) => n >= 1 && n <= 6);
+    // Anciennes données : « matin / après-midi » et plusieurs semaines affichées
+    if (!raw || raw.hours === undefined) { c.hours = 3; c.weeks = 1; }
+    c.hours = clamp(parseInt(c.hours, 10) || 3, 1, 8);
+    c.weeks = clamp(parseInt(c.weeks, 10) || 1, 1, 40);
+    c.perPage = clamp(parseInt(c.perPage, 10) || 30, 5, 60);
+    c.orient = c.orient === 'landscape' ? 'landscape' : 'portrait';
+    c.name = String(c.name || '');
+    c.year = String(c.year || '');
+    c.school = String(c.school || DEFAULT_SCHOOL);
+    c.students = String(c.students || '');
+    c.sort = !!c.sort;
+    return c;
+  }
+
+  function sampleClass() {
+    const c = newClass();
+    c.name = 'Classe exemple';
+    c.students = [
+      'MBA Sarah', 'NZE Kevin', 'OBAME Diane', 'ONDO Brice', 'MOUNGUENGUI Estelle',
+      'NGUEMA Junior', 'MOUELE Prisca', 'ELLA Grâce', 'BIYOGHE Samuel',
+      'MAGANGA Rodrigue', 'ASSOUMOU Léa', 'ISSEMBE Carine'
+    ].join('\n');
+    c.sort = true;
+    return c;
+  }
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return null;
+      const s = JSON.parse(raw);
+      if (s && Array.isArray(s.classes) && s.classes.length) {
+        return { classes: s.classes.map(normalize), currentId: s.currentId };
+      }
+    } catch (e) { /* stockage indisponible ou illisible */ }
+    return null;
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+      const d = new Date();
+      say(`Enregistré sur cet appareil à ${pad(d.getHours())}:${pad(d.getMinutes())}`, 'ok');
+      return true;
+    } catch (e) {
+      say('Non enregistré : le navigateur bloque le stockage. Utilisez « Sauvegarder dans un fichier ».', 'bad');
+      return false;
+    }
+  }
+
+  const current = () => state.classes.find((c) => c.id === state.currentId) || state.classes[0];
+
+  /* ---------- Liste d'élèves ---------- */
+
+  function parseStudents(text, sort) {
+    const list = String(text || '')
+      .split(/\r?\n/)
+      .map((line) => line
+        .replace(/^\s*\d+\s*(?:[.)\-–:]|\t)\s*/, '') // numéro en début de ligne (1. / 1) / 1 tab)
+        .replace(/\t+/g, ' ')                         // colonnes Excel : nom et prénom côte à côte
+        .replace(/\s+/g, ' ')
+        .trim())
+      .filter(Boolean);
+    if (sort) list.sort((a, b) => a.localeCompare(b, 'fr', { sensitivity: 'base' }));
+    return list;
+  }
+
+  /* ---------- Formulaire ---------- */
+
+  function fillForm() {
+    const c = current();
+    $('c-name').value = c.name;
+    $('c-year').value = c.year;
+    $('c-school').value = c.school;
+    $('c-students').value = c.students;
+    $('c-sort').checked = c.sort;
+    $('c-start').value = c.start;
+    $('c-hours').value = c.hours;
+    $('c-weeks').value = c.weeks;
+    $('c-orient').value = c.orient;
+    $('c-perpage').value = c.perPage;
+    $('add-name').value = '';
+    document.querySelectorAll('#view-eleves input[name="day"]').forEach((el) => {
+      el.checked = c.days.includes(+el.value);
+    });
+  }
+
+  function readForm() {
+    const c = current();
+    c.name = $('c-name').value;
+    c.year = $('c-year').value;
+    c.school = $('c-school').value;
+    c.students = $('c-students').value;
+    c.sort = $('c-sort').checked;
+    c.start = $('c-start').value;
+    c.hours = clamp(parseInt($('c-hours').value, 10) || 1, 1, 8);
+    c.weeks = clamp(parseInt($('c-weeks').value, 10) || 1, 1, 40);
+    c.orient = $('c-orient').value;
+    c.perPage = clamp(parseInt($('c-perpage').value, 10) || 30, 5, 60);
+    c.days = [...document.querySelectorAll('#view-eleves input[name="day"]:checked')].map((el) => +el.value);
+  }
+
+  /* ---------- Liste des classes ---------- */
+
+  function renderList() {
+    const ul = $('class-list');
+    ul.innerHTML = '';
+    state.classes.forEach((c) => {
+      const n = parseStudents(c.students, false).length;
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.dataset.id = c.id;
+      if (c.id === state.currentId) b.setAttribute('aria-current', 'true');
+      b.innerHTML = `<span class="nm">${esc(c.name.trim() || 'Classe sans nom')}</span>` +
+        `<span class="ct">${n} ${plural(n, 'élève', 'élèves')}</span>`;
+      li.appendChild(b);
+      ul.appendChild(li);
+    });
+  }
+
+  /* ---------- Feuilles ---------- */
+
+  // Largeur des colonnes d'heures selon le format de page
+  function layout(c, nDays) {
+    const H = c.hours;
+    const usable = c.orient === 'portrait' ? 190 : 277;
+    const obs = c.orient === 'portrait' ? 24 : 36;
+    const raw = (usable - 7 - obs - 50) / (nDays * H); // on garde au moins 50 mm pour le nom
+    const max = H === 1 ? 22 : 16;
+    let cell;
+    let fits = true;
+    if (raw >= 6) {
+      cell = clamp(raw, 6, max);
+    } else {
+      fits = false;
+      cell = Math.max(4, (usable - 7 - obs - 35) / (nDays * H));
+    }
+    return { obs, cell: Math.round(cell * 10) / 10, fits };
+  }
+
+  const hourLabel = (i, narrow) => (narrow ? String(i + 1) : (i === 0 ? '1re h' : `${i + 1}e h`));
+
+  function tableHtml(c, chunk, offset, monday, days) {
+    const H = c.hours;
+    const { obs, cell } = layout(c, days.length);
+    const rows = H > 1 ? 2 : 1;
+
+    const cols = '<col style="width:7mm"><col>' +
+      days.map(() => `<col style="width:${cell}mm">`.repeat(H)).join('') +
+      `<col style="width:${obs}mm">`;
+
+    const head1 = `<tr><th rowspan="${rows}">N°</th><th rowspan="${rows}">Noms et prénoms</th>` +
+      days.map((d) => `<th colspan="${H}">${d.short} ${fmtShort(addDays(monday, d.n - 1))}</th>`).join('') +
+      `<th rowspan="${rows}">Observations</th></tr>`;
+
+    let head2 = '';
+    if (H > 1) {
+      let labels = '';
+      for (let i = 0; i < H; i++) labels += `<th class="sub">${hourLabel(i, cell < 6)}</th>`;
+      head2 = `<tr>${days.map(() => labels).join('')}</tr>`;
+    }
+
+    const blanks = '<td></td>'.repeat(days.length * H);
+    const body = chunk.map((name, i) =>
+      `<tr><td class="n">${offset + i + 1}</td><td class="name">${esc(name)}</td>${blanks}<td></td></tr>`
+    ).join('');
+
+    return `<table class="pt"><colgroup>${cols}</colgroup><thead>${head1}${head2}</thead><tbody>${body}</tbody></table>`;
+  }
+
+  // Fabrique les feuilles de `weeksCount` semaines à partir du lundi donné
+  function buildSheets(c, students, days, firstMonday, weeksCount) {
+    const pagesPerWeek = Math.ceil(students.length / c.perPage);
+    const totalPages = pagesPerWeek * weeksCount;
+    const minDay = days[0].n;
+    const maxDay = days[days.length - 1].n;
+    const school = esc(c.school);
+    const footName = esc(c.school.split(' – ')[0] || c.school);
+    let page = 0;
+    let html = '';
+
+    for (let w = 0; w < weeksCount; w++) {
+      const monday = addDays(firstMonday, 7 * w);
+      const from = fmt(addDays(monday, minDay - 1));
+      const to = fmt(addDays(monday, maxDay - 1));
+      for (let p = 0; p < pagesPerWeek; p++) {
+        const offset = p * c.perPage;
+        const chunk = students.slice(offset, offset + c.perPage);
+        page++;
+        html += `<section class="sheet">
+  <h2>Liste de présence des élèves</h2>
+  <p class="sheet-school">${school}</p>
+  <div class="sheet-meta">
+    <span>Classe : <b>${esc(c.name.trim() || '________________')}</b></span>
+    <span>Année scolaire : <b>${esc(c.year || '____________')}</b></span>
+    <span>Semaine du <b>${from}</b> au <b>${to}</b></span>
+  </div>
+  ${tableHtml(c, chunk, offset, monday, days)}
+  <div class="sheet-foot">
+    <span>Visa du Responsable : _______________________________</span>
+    <span>Date : ____ / ____ / ________</span>
+  </div>
+  <div class="sheet-page">${footName} | Page ${page} / ${totalPages}</div>
+</section>`;
+      }
+    }
+    return html;
+  }
+
+  function renderPreview() {
+    const c = current();
+    const students = parseStudents(c.students, c.sort);
+    const start = parseISO(c.start);
+    const days = DAYS.filter((d) => c.days.includes(d.n));
+    const sheets = $('sheets');
+    const printArea = $('print-area');
+    const empty = $('empty');
+    const warn = $('warn');
+    const landscape = c.orient === 'landscape';
+
+    $('count').textContent = students.length
+      ? `${students.length} ${plural(students.length, 'élève', 'élèves')}`
+      : '';
+
+    // Format de page pour l'impression
+    $('page-style').textContent = `@page { size: A4 ${c.orient}; margin: 10mm; }`;
+    sheets.classList.toggle('landscape', landscape);
+    printArea.classList.toggle('landscape', landscape);
+
+    $('week-hint').textContent = start
+      ? `Cette semaine commence le lundi ${fmt(mondayOf(start))}.`
+      : 'Choisissez une date pour afficher la semaine.';
+
+    $('btn-print').textContent = c.weeks > 1 ? `Imprimer ${c.weeks} semaines` : 'Imprimer cette semaine';
+
+    let message = '';
+    if (!students.length) message = 'Collez la liste des élèves dans le panneau de gauche pour générer la feuille.';
+    else if (!start) message = 'Choisissez une date pour afficher la semaine.';
+    else if (!days.length) message = 'Choisissez au moins un jour à pointer.';
+
+    if (message) {
+      sheets.innerHTML = '';
+      printArea.innerHTML = '';
+      empty.textContent = message;
+      empty.hidden = false;
+      warn.hidden = true;
+      $('summary').textContent = '';
+      $('btn-print').disabled = true;
+      return;
+    }
+
+    empty.hidden = true;
+    $('btn-print').disabled = false;
+
+    const monday = mondayOf(start);
+    const minDay = days[0].n;
+    const maxDay = days[days.length - 1].n;
+    const pagesPerWeek = Math.ceil(students.length / c.perPage);
+
+    // À l'écran : une seule semaine. Pour l'impression : toutes les semaines demandées.
+    sheets.innerHTML = buildSheets(c, students, days, monday, 1);
+    printArea.innerHTML = buildSheets(c, students, days, monday, c.weeks);
+
+    $('summary').textContent =
+      `Semaine du ${fmt(addDays(monday, minDay - 1))} au ${fmt(addDays(monday, maxDay - 1))} · ` +
+      `${students.length} ${plural(students.length, 'élève', 'élèves')} · ` +
+      `${pagesPerWeek} ${plural(pagesPerWeek, 'feuille', 'feuilles')} A4 ${landscape ? 'paysage' : 'portrait'}`;
+
+    if (layout(c, days.length).fits) {
+      warn.hidden = true;
+    } else {
+      warn.textContent = 'Il y a trop de colonnes pour ce format. Passez en A4 paysage, ou réduisez le nombre d\'heures ou de jours.';
+      warn.hidden = false;
+    }
+
+    fit();
+  }
+
+  // Réduit l'aperçu pour que la feuille entière tienne dans la largeur de l'écran
+  function fit() {
+    const el = $('sheets');
+    if (!state.classes.length) return;
+    const c = current();
+    el.style.zoom = '';
+    const px = (c.orient === 'landscape' ? 297 : 210) * 96 / 25.4;
+    const avail = $('preview').clientWidth;
+    if (avail > 0 && avail < px) el.style.zoom = (avail / px).toFixed(4);
+  }
+
+  /* ---------- Actions ---------- */
+
+  function refresh() {
+    renderList();
+    renderPreview();
+  }
+
+  function select(id) {
+    state.currentId = id;
+    save();
+    disarmDelete();
+    fillForm();
+    refresh();
+  }
+
+  $('class-form').addEventListener('input', (e) => {
+    if (e.target.id === 'add-name') return;
+    if (e.target.id === 'c-orient') {
+      $('c-perpage').value = e.target.value === 'portrait' ? 30 : 18;
+    }
+    readForm();
+    save();
+    refresh();
+  });
+  $('class-form').addEventListener('submit', (e) => e.preventDefault());
+
+  $('class-list').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-id]');
+    if (b) select(b.dataset.id);
+  });
+
+  $('btn-new').addEventListener('click', () => {
+    const c = newClass(current());
+    state.classes.push(c);
+    select(c.id);
+    $('c-name').focus();
+  });
+
+  // Ajout rapide d'un élève à la fin de la liste
+  function addStudent() {
+    const input = $('add-name');
+    const name = input.value.trim();
+    if (!name) { input.focus(); return; }
+    const ta = $('c-students');
+    ta.value = ta.value.replace(/\s+$/, '') + (ta.value.trim() ? '\n' : '') + name;
+    input.value = '';
+    readForm();
+    save();
+    refresh();
+    input.focus();
+  }
+  $('btn-add').addEventListener('click', addStudent);
+  $('add-name').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); addStudent(); }
+  });
+
+  // Passage d'une semaine à l'autre
+  function shiftWeek(n) {
+    const c = current();
+    const d = parseISO(c.start) || new Date();
+    c.start = toISO(addDays(mondayOf(d), 7 * n));
+    $('c-start').value = c.start;
+    save();
+    refresh();
+  }
+  $('wk-prev').addEventListener('click', () => shiftWeek(-1));
+  $('wk-next').addEventListener('click', () => shiftWeek(1));
+
+  let armTimer = null;
+  function disarmDelete() {
+    const b = $('btn-delete');
+    clearTimeout(armTimer);
+    b.classList.remove('armed');
+    b.textContent = 'Supprimer cette classe';
+  }
+
+  $('btn-delete').addEventListener('click', () => {
+    const b = $('btn-delete');
+    if (!b.classList.contains('armed')) {
+      b.classList.add('armed');
+      b.textContent = 'Confirmer la suppression';
+      armTimer = setTimeout(disarmDelete, 4000);
+      return;
+    }
+    disarmDelete();
+    state.classes = state.classes.filter((c) => c.id !== state.currentId);
+    if (!state.classes.length) state.classes.push(newClass());
+    select(state.classes[0].id);
+  });
+
+  /* ---------- Sauvegarde dans un fichier ---------- */
+
+  $('btn-export').addEventListener('click', () => {
+    const data = { app: APP, version: 1, classes: state.classes };
+    download(`${APP}-${toISO(new Date())}.json`, JSON.stringify(data, null, 2));
+  });
+
+  $('btn-import').addEventListener('click', () => $('file-import').click());
+
+  $('file-import').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        if (data && data.app && data.app !== APP) throw new Error('autre document');
+        const list = Array.isArray(data) ? data : data.classes;
+        if (!Array.isArray(list) || !list.length) throw new Error('vide');
+        let last = null;
+        list.forEach((raw) => {
+          const c = normalize(raw);
+          const i = state.classes.findIndex((x) => x.id === c.id);
+          if (i >= 0) state.classes[i] = c; else state.classes.push(c);
+          last = c;
+        });
+        select(last.id);
+        say(`${list.length} ${plural(list.length, 'classe restaurée', 'classes restaurées')}.`, 'ok');
+      } catch (err) {
+        say('Ce fichier n\'est pas une sauvegarde de la liste de présence des élèves.', 'bad');
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  window.addEventListener('resize', fit);
+
+  /* ---------- Démarrage (à la première ouverture de la page) ---------- */
+
+  function boot() {
+    booted = true;
+    const loaded = load();
+    if (loaded) {
+      state = loaded;
+      if (!state.classes.some((c) => c.id === state.currentId)) state.currentId = state.classes[0].id;
+    } else {
+      const c = sampleClass();
+      state = { classes: [c], currentId: c.id };
+    }
+    fillForm();
+    refresh();
+    if (loaded) {
+      const n = state.classes.length;
+      say(`${n} ${plural(n, 'classe retrouvée', 'classes retrouvées')} sur cet appareil.`, 'ok');
+    } else {
+      save();
+    }
+  }
+
+  PT.views.eleves = {
+    show() {
+      if (!booted) boot(); else renderPreview();
+    }
+  };
+})();
+
+</script>
+<script>
+/* Document « Pointage des enseignants » : feuille de pointage des professeurs d'une classe. */
+(() => {
+  'use strict';
+
+  const {
+    $, pad, clamp, uid, plural, esc,
+    parseISO, toISO, addDays, mondayOf, fmt, setStatus, download
+  } = PT;
+
+  const KEY = 'pointage-enseignants.v1';
+  const APP = 'pointage-enseignants';
+  const DEFAULT_SCHOOL = 'Complexe Scolaire La Réussite Owendo – B.P. 46209';
+
+  const say = (text, kind) => setStatus('t-saved', text, kind);
+
+  /* ---------- Données ---------- */
+
+  let state = { classes: [], currentId: null };
+  let booted = false;
+
+  function newClass(base) {
+    return {
+      id: uid(),
+      name: '',
+      school: base && base.school ? base.school : DEFAULT_SCHOOL,
+      teachers: '',
+      sort: false,
+      start: toISO(mondayOf(new Date())),
+      saturday: false,
+      weeks: 1,
+      perPage: 14,
+      pad: true
+    };
+  }
+
+  function normalize(raw) {
+    const base = newClass();
+    const c = Object.assign({}, base, raw || {});
+    if (!c.id) c.id = base.id;
+    c.name = String(c.name || '');
+    c.school = String(c.school || DEFAULT_SCHOOL);
+    c.teachers = String(c.teachers || '');
+    c.sort = !!c.sort;
+    c.saturday = !!c.saturday;
+    c.pad = c.pad !== false;
+    c.weeks = clamp(parseInt(c.weeks, 10) || 1, 1, 40);
+    c.perPage = clamp(parseInt(c.perPage, 10) || 14, 5, 24);
+    return c;
+  }
+
+  function sampleClass() {
+    const c = newClass();
+    c.name = 'Classe exemple';
+    c.teachers = [
+      'ABESSOLO Marc ; Mathématiques',
+      'NDONG Chantal ; Français',
+      'MOUSSAVOU Pierre ; Histoire-Géographie',
+      'OKOUMBA Judith ; Anglais',
+      'BOUASSA Roland ; Physique-Chimie',
+      'MINTSA Esther ; SVT',
+      'EYENE Louis ; EPS'
+    ].join('\n');
+    return c;
+  }
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return null;
+      const s = JSON.parse(raw);
+      if (s && Array.isArray(s.classes) && s.classes.length) {
+        return { classes: s.classes.map(normalize), currentId: s.currentId };
+      }
+    } catch (e) { /* stockage indisponible ou illisible */ }
+    return null;
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+      const d = new Date();
+      say(`Enregistré sur cet appareil à ${pad(d.getHours())}:${pad(d.getMinutes())}`, 'ok');
+      return true;
+    } catch (e) {
+      say('Non enregistré : le navigateur bloque le stockage. Utilisez « Sauvegarder dans un fichier ».', 'bad');
+      return false;
+    }
+  }
+
+  const current = () => state.classes.find((c) => c.id === state.currentId) || state.classes[0];
+
+  /* ---------- Liste d'enseignants ---------- */
+
+  // Une ligne = un enseignant : « NOM Prénom ; Matière ».
+  // Le séparateur peut être « ; », « | » ou une tabulation (colonnes copiées depuis Excel).
+  // Avec trois colonnes (Nom ; Prénom ; Matière), nom et prénom sont réunis.
+  function parseTeachers(text, sort) {
+    const list = String(text || '')
+      .split(/\r?\n/)
+      .map((line) => {
+        const parts = line
+          .replace(/^\s*\d+\s*(?:[.)\-–:]|\t)\s*/, '') // numéro en début de ligne
+          .split(/\t|;|\|/)
+          .map((p) => p.replace(/\s+/g, ' ').trim());
+        while (parts.length && !parts[parts.length - 1]) parts.pop();
+        if (!parts.length || !parts[0]) return null;
+        if (parts.length >= 3) return { name: `${parts[0]} ${parts[1]}`.trim(), subject: parts.slice(2).join(' ') };
+        return { name: parts[0], subject: parts[1] || '' };
+      })
+      .filter(Boolean);
+    if (sort) list.sort((a, b) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }));
+    return list;
+  }
+
+  /* ---------- Formulaire ---------- */
+
+  function fillForm() {
+    const c = current();
+    $('t-name').value = c.name;
+    $('t-school').value = c.school;
+    $('t-teachers').value = c.teachers;
+    $('t-sort').checked = c.sort;
+    $('t-start').value = c.start;
+    $('t-saturday').checked = c.saturday;
+    $('t-perpage').value = c.perPage;
+    $('t-pad').checked = c.pad;
+    $('t-weeks').value = c.weeks;
+    $('t-add-name').value = '';
+    $('t-add-subject').value = '';
+  }
+
+  function readForm() {
+    const c = current();
+    c.name = $('t-name').value;
+    c.school = $('t-school').value;
+    c.teachers = $('t-teachers').value;
+    c.sort = $('t-sort').checked;
+    c.start = $('t-start').value;
+    c.saturday = $('t-saturday').checked;
+    c.perPage = clamp(parseInt($('t-perpage').value, 10) || 14, 5, 24);
+    c.pad = $('t-pad').checked;
+    c.weeks = clamp(parseInt($('t-weeks').value, 10) || 1, 1, 40);
+  }
+
+  /* ---------- Liste des classes ---------- */
+
+  function renderList() {
+    const ul = $('t-class-list');
+    ul.innerHTML = '';
+    state.classes.forEach((c) => {
+      const n = parseTeachers(c.teachers, false).length;
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.dataset.id = c.id;
+      if (c.id === state.currentId) b.setAttribute('aria-current', 'true');
+      b.innerHTML = `<span class="nm">${esc(c.name.trim() || 'Classe sans nom')}</span>` +
+        `<span class="ct">${n} ${plural(n, 'enseignant', 'enseignants')}</span>`;
+      li.appendChild(b);
+      ul.appendChild(li);
+    });
+  }
+
+  /* ---------- Feuilles ---------- */
+
+  // Fabrique les feuilles de `weeksCount` semaines à partir du lundi donné
+  function buildSheets(c, teachers, firstMonday, weeksCount) {
+    const per = c.perPage;
+    const fillRows = c.pad || !teachers.length;
+    const pagesPerWeek = Math.max(1, Math.ceil(teachers.length / per));
+    const totalPages = pagesPerWeek * weeksCount;
+    const rowMm = Math.round(Math.min(9, 127 / per) * 10) / 10; // la hauteur des lignes s'adapte à la page
+    const school = esc(c.school);
+    const footName = esc(c.school.split(' – ')[0] || c.school);
+    const className = esc(c.name.trim() || '________________________');
+    const lastDay = c.saturday ? 5 : 4;
+    let page = 0;
+    let html = '';
+
+    for (let w = 0; w < weeksCount; w++) {
+      const monday = addDays(firstMonday, 7 * w);
+      const from = fmt(monday);
+      const to = fmt(addDays(monday, lastDay));
+      for (let p = 0; p < pagesPerWeek; p++) {
+        const offset = p * per;
+        const chunk = teachers.slice(offset, offset + per);
+        const rows = fillRows ? per : chunk.length;
+        let body = '';
+        for (let i = 0; i < rows; i++) {
+          const t = chunk[i];
+          body += `<tr><td class="n">${offset + i + 1}</td><td></td>` +
+            `<td class="name">${t ? esc(t.name) : ''}</td><td>${t ? esc(t.subject) : ''}</td>` +
+            '<td></td><td></td><td></td><td></td></tr>';
+        }
+        page++;
+        html += `<section class="sheet prof" style="--row:${rowMm}mm">
+  <h2>LISTE DE POINTAGE – PROF</h2>
+  <p class="sheet-school">${school}</p>
+  <div class="prof-meta">
+    <span>Classe : <b>${className}</b></span>
+    <span class="horaires">HORAIRES</span>
+    <span>Semaine du <b>${from}</b> au <b>${to}</b></span>
+  </div>
+  <table class="pt ptp">
+    <colgroup><col style="width:4.5%"><col style="width:8.7%"><col style="width:25.3%"><col style="width:13.2%"><col style="width:6.4%"><col style="width:6.2%"><col style="width:13.8%"><col style="width:21.9%"></colgroup>
+    <thead><tr><th>N°</th><th>Date</th><th>Noms et prénoms<br>de l'enseignant</th><th>Matières</th><th>Début</th><th>Fin</th><th>Signature</th><th>Nbre d'h et<br>observations</th></tr></thead>
+    <tbody>${body}</tbody>
+  </table>
+  <div class="sheet-foot">
+    <span>Visa du Responsable : _______________________________</span>
+    <span>Date : ____ / ____ / ________</span>
+  </div>
+  <div class="sheet-page">${footName} | Page ${page} / ${totalPages}</div>
+</section>`;
+      }
+    }
+    return html;
+  }
+
+  function renderPreview() {
+    const c = current();
+    const teachers = parseTeachers(c.teachers, c.sort);
+    const start = parseISO(c.start);
+    const sheets = $('t-sheets');
+    const printArea = $('t-print-area');
+    const empty = $('t-empty');
+
+    $('t-count').textContent = teachers.length
+      ? `${teachers.length} ${plural(teachers.length, 'enseignant', 'enseignants')}`
+      : '';
+
+    $('page-style').textContent = '@page { size: A4 landscape; margin: 10mm; }';
+    $('t-hint').textContent = start
+      ? `Cette semaine commence le lundi ${fmt(mondayOf(start))}.`
+      : 'Choisissez une date pour afficher la semaine.';
+
+    $('btn-print').textContent = c.weeks > 1 ? `Imprimer ${c.weeks} semaines` : 'Imprimer cette semaine';
+
+    if (!start) {
+      sheets.innerHTML = '';
+      printArea.innerHTML = '';
+      empty.textContent = 'Choisissez une date pour afficher la semaine.';
+      empty.hidden = false;
+      $('t-summary').textContent = '';
+      $('btn-print').disabled = true;
+      return;
+    }
+
+    $('btn-print').disabled = false;
+    const monday = mondayOf(start);
+    const pagesPerWeek = Math.max(1, Math.ceil(teachers.length / c.perPage));
+
+    // À l'écran : une seule semaine. Pour l'impression : toutes les semaines demandées.
+    sheets.innerHTML = buildSheets(c, teachers, monday, 1);
+    printArea.innerHTML = buildSheets(c, teachers, monday, c.weeks);
+
+    if (teachers.length) {
+      empty.hidden = true;
+    } else {
+      empty.textContent = 'Aucun enseignant dans la liste : la feuille est vierge. Collez les noms dans le panneau de gauche pour les préremplir.';
+      empty.hidden = false;
+    }
+
+    $('t-summary').textContent =
+      `Semaine du ${fmt(monday)} au ${fmt(addDays(monday, c.saturday ? 5 : 4))} · ` +
+      `${teachers.length} ${plural(teachers.length, 'enseignant', 'enseignants')} · ` +
+      `${pagesPerWeek} ${plural(pagesPerWeek, 'feuille', 'feuilles')} A4 paysage`;
+
+    fit();
+  }
+
+  // Réduit l'aperçu pour que la feuille entière tienne dans la largeur de l'écran
+  function fit() {
+    const el = $('t-sheets');
+    el.style.zoom = '';
+    const px = 297 * 96 / 25.4;
+    const avail = $('t-preview').clientWidth;
+    if (avail > 0 && avail < px) el.style.zoom = (avail / px).toFixed(4);
+  }
+
+  /* ---------- Actions ---------- */
+
+  function refresh() {
+    renderList();
+    renderPreview();
+  }
+
+  function select(id) {
+    state.currentId = id;
+    save();
+    disarmDelete();
+    fillForm();
+    refresh();
+  }
+
+  $('t-form').addEventListener('input', (e) => {
+    if (e.target.id === 't-add-name' || e.target.id === 't-add-subject') return;
+    readForm();
+    save();
+    refresh();
+  });
+  $('t-form').addEventListener('submit', (e) => e.preventDefault());
+
+  $('t-class-list').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-id]');
+    if (b) select(b.dataset.id);
+  });
+
+  $('t-new').addEventListener('click', () => {
+    const c = newClass(current());
+    state.classes.push(c);
+    select(c.id);
+    $('t-name').focus();
+  });
+
+  // Ajout rapide d'un enseignant à la fin de la liste
+  function addTeacher() {
+    const nameInput = $('t-add-name');
+    const name = nameInput.value.trim();
+    if (!name) { nameInput.focus(); return; }
+    const subject = $('t-add-subject').value.trim();
+    const ta = $('t-teachers');
+    ta.value = ta.value.replace(/\s+$/, '') + (ta.value.trim() ? '\n' : '') + (subject ? `${name} ; ${subject}` : name);
+    nameInput.value = '';
+    $('t-add-subject').value = '';
+    readForm();
+    save();
+    refresh();
+    nameInput.focus();
+  }
+  $('t-add').addEventListener('click', addTeacher);
+  ['t-add-name', 't-add-subject'].forEach((id) => {
+    $(id).addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); addTeacher(); }
+    });
+  });
+
+  // Passage d'une semaine à l'autre
+  function shiftWeek(n) {
+    const c = current();
+    const d = parseISO(c.start) || new Date();
+    c.start = toISO(addDays(mondayOf(d), 7 * n));
+    $('t-start').value = c.start;
+    save();
+    refresh();
+  }
+  $('t-prev').addEventListener('click', () => shiftWeek(-1));
+  $('t-next').addEventListener('click', () => shiftWeek(1));
+
+  let armTimer = null;
+  function disarmDelete() {
+    const b = $('t-delete');
+    clearTimeout(armTimer);
+    b.classList.remove('armed');
+    b.textContent = 'Supprimer cette classe';
+  }
+
+  $('t-delete').addEventListener('click', () => {
+    const b = $('t-delete');
+    if (!b.classList.contains('armed')) {
+      b.classList.add('armed');
+      b.textContent = 'Confirmer la suppression';
+      armTimer = setTimeout(disarmDelete, 4000);
+      return;
+    }
+    disarmDelete();
+    state.classes = state.classes.filter((c) => c.id !== state.currentId);
+    if (!state.classes.length) state.classes.push(newClass());
+    select(state.classes[0].id);
+  });
+
+  /* ---------- Sauvegarde dans un fichier ---------- */
+
+  $('t-export').addEventListener('click', () => {
+    const data = { app: APP, version: 1, classes: state.classes };
+    download(`${APP}-${toISO(new Date())}.json`, JSON.stringify(data, null, 2));
+  });
+
+  $('t-import').addEventListener('click', () => $('t-file').click());
+
+  $('t-file').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        if (data && data.app && data.app !== APP) throw new Error('autre document');
+        const list = Array.isArray(data) ? data : data.classes;
+        if (!Array.isArray(list) || !list.length) throw new Error('vide');
+        let last = null;
+        list.forEach((raw) => {
+          const c = normalize(raw);
+          const i = state.classes.findIndex((x) => x.id === c.id);
+          if (i >= 0) state.classes[i] = c; else state.classes.push(c);
+          last = c;
+        });
+        select(last.id);
+        say(`${list.length} ${plural(list.length, 'classe restaurée', 'classes restaurées')}.`, 'ok');
+      } catch (err) {
+        say('Ce fichier n\'est pas une sauvegarde du pointage des enseignants.', 'bad');
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  window.addEventListener('resize', fit);
+
+  /* ---------- Démarrage (à la première ouverture de la page) ---------- */
+
+  function boot() {
+    booted = true;
+    const loaded = load();
+    if (loaded) {
+      state = loaded;
+      if (!state.classes.some((c) => c.id === state.currentId)) state.currentId = state.classes[0].id;
+    } else {
+      const c = sampleClass();
+      state = { classes: [c], currentId: c.id };
+    }
+    fillForm();
+    refresh();
+    if (loaded) {
+      const n = state.classes.length;
+      say(`${n} ${plural(n, 'classe retrouvée', 'classes retrouvées')} sur cet appareil.`, 'ok');
+    } else {
+      save();
+    }
+  }
+
+  PT.views.enseignants = {
+    show() {
+      if (!booted) boot(); else renderPreview();
+    }
+  };
+})();
+
+</script>
+<script>
+/* Page d'accueil et navigation : #eleves, #enseignants, sinon l'accueil. */
+(() => {
+  'use strict';
+
+  const { $, plural, readClasses } = PT;
+
+  const VIEWS = { eleves: 'view-eleves', enseignants: 'view-enseignants' };
+  const TITLES = { eleves: 'Liste de présence', enseignants: 'Pointage des enseignants' };
+  const KEYS = { eleves: 'pointage-eleves.v1', enseignants: 'pointage-enseignants.v1' };
+
+  // Sur l'accueil : combien de classes sont déjà enregistrées pour chaque document
+  function updateHome() {
+    Object.keys(KEYS).forEach((k) => {
+      const n = readClasses(KEYS[k]).length;
+      $('home-' + k).textContent = n
+        ? `${n} ${plural(n, 'classe enregistrée', 'classes enregistrées')}`
+        : 'Aucune classe pour le moment';
+    });
+  }
+
+  function route() {
+    const name = (location.hash || '').replace(/^#\/?/, '');
+    const key = VIEWS[name] ? name : 'home';
+
+    $('home').hidden = key !== 'home';
+    Object.keys(VIEWS).forEach((k) => { $(VIEWS[k]).hidden = k !== key; });
+    $('btn-print').hidden = key === 'home';
+    $('view-title').textContent = TITLES[key] || '';
+    document.title = key === 'home' ? 'Pointage scolaire' : `${TITLES[key]} – Pointage scolaire`;
+
+    if (key === 'home') {
+      $('page-style').textContent = '';
+      updateHome();
+    } else {
+      PT.views[key].show();
+    }
+    window.scrollTo(0, 0);
+  }
+
+  $('btn-print').addEventListener('click', () => window.print());
+  window.addEventListener('hashchange', route);
+  route();
+})();
+
+</script>
+</body>
+</html>

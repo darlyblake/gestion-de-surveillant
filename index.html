@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pointage scolaire</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0e6a5b">
+  <meta name="description" content="Application de gestion scolaire : listes de présence, billets d'entrée/sortie, exclusions">
+  <style id="page-style"></style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand-row">
+    <a class="brand" href="#" aria-label="Retour à l'accueil">
+      <span class="mark" aria-hidden="true"></span>
+      <h1>Pointage</h1>
+    </a>
+    <span id="view-title" class="view-title"></span>
+  </div>
+  <button type="button" id="btn-print" class="btn primary" hidden>Imprimer</button>
+</header>
+
+<!-- ===================== Accueil ===================== -->
+<main class="home" id="home">
+  <div class="home-inner">
+    <h2>Quel document voulez-vous préparer ?</h2>
+    <p class="home-sub">Vos classes sont enregistrées sur cet appareil. Vous pouvez y revenir pour ajouter un nom ou imprimer une nouvelle semaine.</p>
+
+    <div class="home-grid">
+      <a class="doc-card" href="#classes">
+        <svg class="doc-icon" viewBox="0 0 72 52" aria-hidden="true">
+          <rect x="1.5" y="1.5" width="69" height="49" rx="3" fill="none" stroke="currentColor" stroke-width="3"/>
+          <path d="M1.5 14h69M1.5 26h69M1.5 38h69" fill="none" stroke="currentColor" stroke-width="2"/>
+          <circle cx="18" cy="20" r="4" fill="currentColor"/>
+          <circle cx="36" cy="20" r="4" fill="currentColor"/>
+          <circle cx="54" cy="20" r="4" fill="currentColor"/>
+        </svg>
+        <span class="doc-title">Classes et Élèves</span>
+        <span class="doc-text">Gestion centralisée des classes et des élèves : créez vos classes et ajoutez les élèves une seule fois.</span>
+        <span class="doc-meta" id="home-classes"></span>
+      </a>
+
+      <a class="doc-card" href="#eleves">
+        <svg class="doc-icon" viewBox="0 0 72 52" aria-hidden="true">
+          <rect x="1.5" y="1.5" width="69" height="49" rx="3" fill="none" stroke="currentColor" stroke-width="3"/>
+          <path d="M1.5 14h69M1.5 26h69M1.5 38h69M16 1.5v49M34 1.5v49M44 1.5v49M54 1.5v49" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <span class="doc-title">Liste de présence</span>
+        <span class="doc-text">La feuille d'appel des élèves : une classe, ses élèves, et une colonne par heure de cours pour chaque jour.</span>
+        <span class="doc-meta" id="home-eleves"></span>
+      </a>
+
+      <a class="doc-card" href="#notes">
+        <svg class="doc-icon" viewBox="0 0 72 52" aria-hidden="true">
+          <rect x="1.5" y="1.5" width="69" height="49" rx="3" fill="none" stroke="currentColor" stroke-width="3"/>
+          <path d="M1.5 14h69M1.5 26h69M1.5 38h69" fill="none" stroke="currentColor" stroke-width="2"/>
+          <text x="36" y="32" text-anchor="middle" font-size="16" fill="currentColor">20</text>
+        </svg>
+        <span class="doc-title">Relevés de notes</span>
+        <span class="doc-text">Générez les relevés de notes : intérogations (/10) et moyennes de devoirs (/20) par matière.</span>
+        <span class="doc-meta" id="home-notes"></span>
+      </a>
+
+      <a class="doc-card" href="#enseignants">
+        <svg class="doc-icon" viewBox="0 0 72 52" aria-hidden="true">
+          <rect x="1.5" y="1.5" width="69" height="49" rx="3" fill="none" stroke="currentColor" stroke-width="3"/>
+          <rect x="1.5" y="1.5" width="69" height="13" rx="3" fill="currentColor"/>
+          <path d="M1.5 26h69M1.5 38h69M12 14v36M30 14v36M46 14v36M58 14v36" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <span class="doc-title">Pointage des enseignants</span>
+        <span class="doc-text">La feuille de pointage des professeurs : date, matière, heure de début et de fin, signature et observations.</span>
+        <span class="doc-meta" id="home-enseignants"></span>
+      </a>
+
+      <a class="doc-card" href="#billets">
+        <svg class="doc-icon" viewBox="0 0 72 52" aria-hidden="true">
+          <rect x="1.5" y="1.5" width="69" height="49" rx="3" fill="none" stroke="currentColor" stroke-width="3"/>
+          <path d="M36 1.5v49M1.5 26h69" fill="none" stroke="currentColor" stroke-width="2"/>
+          <circle cx="18" cy="26" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+          <circle cx="54" cy="26" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <span class="doc-title">Billets d'entrée/sortie</span>
+        <span class="doc-text">Gestion des billets d'entrée et de sortie des élèves : dates, motifs et validation.</span>
+        <span class="doc-meta" id="home-billets"></span>
+      </a>
+
+      <a class="doc-card" href="#exclusions">
+        <svg class="doc-icon" viewBox="0 0 72 52" aria-hidden="true">
+          <rect x="1.5" y="1.5" width="69" height="49" rx="3" fill="none" stroke="currentColor" stroke-width="3"/>
+          <path d="M1.5 26h69M36 1.5v49" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 12l48 28M60 12l-48 28" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <span class="doc-title">Exclusions</span>
+        <span class="doc-text">Gestion des exclusions temporaires et définitives des élèves : dates, durées et motifs.</span>
+        <span class="doc-meta" id="home-exclusions"></span>
+      </a>
+    </div>
+  </div>
+</main>
+
+<!-- ===================== Classes et Élèves (centralisé) ===================== -->
+<main class="layout" id="view-classes" hidden>
+
+  <aside class="panel">
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Mes classes</h2>
+        <button type="button" id="cls-new" class="btn">Nouvelle classe</button>
+      </div>
+      <ul id="cls-class-list" class="class-list"></ul>
+      <p id="cls-saved" class="saved" role="status"></p>
+      <div class="row-btns">
+        <button type="button" id="cls-export" class="btn">Sauvegarder dans un fichier</button>
+        <button type="button" id="cls-import" class="btn">Restaurer</button>
+        <input type="file" id="cls-file" accept=".json,application/json" hidden>
+      </div>
+    </section>
+
+    <form id="cls-form" class="card" autocomplete="off">
+      <h2>La classe</h2>
+
+      <div class="field">
+        <label for="cls-name">Nom de la classe</label>
+        <input id="cls-name" type="text" placeholder="Ex. 6e A">
+      </div>
+
+      <div class="field">
+        <label for="cls-school">Établissement</label>
+        <input id="cls-school" type="text">
+      </div>
+
+      <div class="field">
+        <label for="cls-year">Année scolaire</label>
+        <input id="cls-year" type="text" placeholder="Ex. 2026-2027">
+      </div>
+
+      <div class="field">
+        <div class="label-row">
+          <label for="cls-students">Élèves</label>
+          <span id="cls-count" class="count"></span>
+        </div>
+        <textarea id="cls-students" rows="15" placeholder="Collez ici les noms, un élève par ligne"></textarea>
+        <label class="check"><input type="checkbox" id="cls-sort"> Classer par ordre alphabétique</label>
+      </div>
+
+      <div class="field">
+        <label for="cls-add-name">Ajouter un élève</label>
+        <div class="add-row">
+          <input id="cls-add-name" type="text" placeholder="NOM Prénom">
+          <button type="button" id="cls-add" class="btn">Ajouter</button>
+        </div>
+      </div>
+
+      <button type="button" id="cls-delete" class="btn danger">Supprimer cette classe</button>
+    </form>
+
+  </aside>
+
+  <section class="preview" id="cls-preview" aria-label="Aperçu de la classe">
+    <div class="preview-head">
+      <h2>Aperçu</h2>
+      <p id="cls-summary" class="summary"></p>
+    </div>
+    <div id="cls-sheets" class="sheets"></div>
+  </section>
+
+  <div id="cls-print-area" class="print-area" aria-hidden="true"></div>
+
+</main>
+
+<!-- ===================== Liste de présence (élèves) ===================== -->
+<main class="layout" id="view-eleves" hidden>
+
+  <aside class="panel">
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Mes classes</h2>
+        <button type="button" id="btn-new" class="btn">Nouvelle classe</button>
+      </div>
+      <ul id="class-list" class="class-list"></ul>
+      <p id="saved" class="saved" role="status"></p>
+      <div class="row-btns">
+        <button type="button" id="btn-export" class="btn">Sauvegarder dans un fichier</button>
+        <button type="button" id="btn-import" class="btn">Restaurer</button>
+        <input type="file" id="file-import" accept=".json,application/json" hidden>
+      </div>
+    </section>
+
+    <form id="class-form" class="card" autocomplete="off">
+      <h2>La classe</h2>
+
+      <div class="field">
+        <label for="c-class-select">Sélectionner une classe</label>
+        <select id="c-class-select"></select>
+      </div>
+
+      <div class="field">
+        <label for="c-name">Nom de la classe</label>
+        <input id="c-name" type="text" placeholder="Ex. 6e A" readonly>
+      </div>
+
+      <div class="field">
+        <label for="c-year">Année scolaire</label>
+        <input id="c-year" type="text" placeholder="Ex. 2026-2027" readonly>
+      </div>
+
+      <div class="field">
+        <label for="c-school">Établissement</label>
+        <input id="c-school" type="text" readonly>
+      </div>
+
+      <div class="field">
+        <div class="label-row">
+          <label>Élèves</label>
+          <span id="count" class="count"></span>
+        </div>
+        <p class="hint">Les élèves sont chargés depuis la classe sélectionnée</p>
+      </div>
+
+      <h2 class="sub-title">La semaine</h2>
+
+      <div class="field">
+        <label for="c-start">Semaine affichée</label>
+        <div class="week-nav">
+          <button type="button" id="wk-prev" class="btn" aria-label="Semaine précédente">◀</button>
+          <input id="c-start" type="date">
+          <button type="button" id="wk-next" class="btn" aria-label="Semaine suivante">▶</button>
+        </div>
+      </div>
+      <p id="week-hint" class="hint"></p>
+
+      <fieldset class="field">
+        <legend>Jours à pointer</legend>
+        <div class="chips">
+          <label><input type="checkbox" name="day" value="1"><span>Lun</span></label>
+          <label><input type="checkbox" name="day" value="2"><span>Mar</span></label>
+          <label><input type="checkbox" name="day" value="3"><span>Mer</span></label>
+          <label><input type="checkbox" name="day" value="4"><span>Jeu</span></label>
+          <label><input type="checkbox" name="day" value="5"><span>Ven</span></label>
+          <label><input type="checkbox" name="day" value="6"><span>Sam</span></label>
+        </div>
+      </fieldset>
+
+      <div class="field">
+        <label for="c-hours">Heures de cours par jour</label>
+        <input id="c-hours" type="number" min="1" max="8" inputmode="numeric">
+      </div>
+      <p class="hint">Chaque jour reçoit une colonne par heure : 1re h, 2e h, 3e h…</p>
+
+      <h2 class="sub-title">La feuille</h2>
+
+      <div class="grid2">
+        <div class="field">
+          <label for="c-orient">Format</label>
+          <select id="c-orient">
+            <option value="portrait">A4 portrait</option>
+            <option value="landscape">A4 paysage</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="c-perpage">Élèves par feuille</label>
+          <input id="c-perpage" type="number" min="5" max="60" inputmode="numeric">
+        </div>
+      </div>
+      <p class="hint">30 élèves tiennent sur une feuille en portrait, 18 en paysage. Au-delà, la liste continue sur la feuille suivante.</p>
+
+      <h2 class="sub-title">L'impression</h2>
+
+      <div class="field">
+        <label for="c-weeks">Semaines à imprimer</label>
+        <input id="c-weeks" type="number" min="1" max="40" inputmode="numeric">
+      </div>
+      <p class="hint">À partir de la semaine affichée. Avec 4, vous obtenez 4 feuilles : la semaine affichée et les 3 suivantes.</p>
+
+      <button type="button" id="btn-delete" class="btn danger">Supprimer cette classe</button>
+    </form>
+
+  </aside>
+
+  <section class="preview" id="preview" aria-label="Aperçu de la feuille">
+    <div class="preview-head">
+      <h2>Aperçu</h2>
+      <p id="summary" class="summary"></p>
+    </div>
+    <p id="warn" class="warn" hidden></p>
+    <p id="empty" class="empty" hidden></p>
+    <div id="sheets" class="sheets"></div>
+  </section>
+
+  <div id="print-area" class="print-area" aria-hidden="true"></div>
+
+</main>
+
+<!-- ===================== Pointage des enseignants ===================== -->
+<main class="layout" id="view-enseignants" hidden>
+
+  <aside class="panel">
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Mes classes</h2>
+        <button type="button" id="t-new" class="btn">Nouvelle classe</button>
+      </div>
+      <ul id="t-class-list" class="class-list"></ul>
+      <p id="t-saved" class="saved" role="status"></p>
+      <div class="row-btns">
+        <button type="button" id="t-export" class="btn">Sauvegarder dans un fichier</button>
+        <button type="button" id="t-import" class="btn">Restaurer</button>
+        <input type="file" id="t-file" accept=".json,application/json" hidden>
+      </div>
+    </section>
+
+    <form id="t-form" class="card" autocomplete="off">
+      <h2>La classe</h2>
+
+      <div class="field">
+        <label for="t-name">Nom de la classe</label>
+        <input id="t-name" type="text" placeholder="Ex. 6e A">
+      </div>
+
+      <div class="field">
+        <label for="t-school">Établissement</label>
+        <input id="t-school" type="text">
+      </div>
+
+      <h2 class="sub-title">La semaine</h2>
+
+      <div class="field">
+        <label for="t-start">Semaine affichée</label>
+        <div class="week-nav">
+          <button type="button" id="t-prev" class="btn" aria-label="Semaine précédente">◀</button>
+          <input id="t-start" type="date">
+          <button type="button" id="t-next" class="btn" aria-label="Semaine suivante">▶</button>
+        </div>
+      </div>
+      <p id="t-hint" class="hint"></p>
+
+      <label class="check"><input type="checkbox" id="t-saturday"> La semaine va jusqu'au samedi</label>
+
+      <h2 class="sub-title">La feuille</h2>
+
+      <div class="field">
+        <label for="t-perpage">Lignes par feuille</label>
+        <input id="t-perpage" type="number" min="10" max="30" inputmode="numeric">
+      </div>
+      <p class="hint">Nombre de lignes vierges pour les enseignants. Les enseignants rempliront leurs noms et informations à la main.</p>
+
+      <label class="check"><input type="checkbox" id="t-pad"> Compléter la feuille avec des lignes vides</label>
+
+      <h2 class="sub-title">L'impression</h2>
+
+      <div class="field">
+        <label for="t-weeks">Semaines à imprimer</label>
+        <input id="t-weeks" type="number" min="1" max="40" inputmode="numeric">
+      </div>
+      <p class="hint">À partir de la semaine affichée. Avec 4, vous obtenez 4 feuilles : la semaine affichée et les 3 suivantes.</p>
+
+      <button type="button" id="t-delete" class="btn danger">Supprimer cette classe</button>
+    </form>
+
+  </aside>
+
+  <section class="preview" id="t-preview" aria-label="Aperçu de la feuille">
+    <div class="preview-head">
+      <h2>Aperçu</h2>
+      <p id="t-summary" class="summary"></p>
+    </div>
+    <p id="t-empty" class="empty" hidden></p>
+    <div id="t-sheets" class="sheets landscape"></div>
+  </section>
+
+  <div id="t-print-area" class="print-area landscape" aria-hidden="true"></div>
+
+</main>
+
+<!-- ===================== Billets d'entrée/sortie ===================== -->
+<main class="layout" id="view-billets" hidden>
+
+  <aside class="panel">
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Mes classes</h2>
+        <button type="button" id="b-new" class="btn">Nouvelle classe</button>
+      </div>
+      <ul id="b-class-list" class="class-list"></ul>
+      <p id="b-saved" class="saved" role="status"></p>
+      <div class="row-btns">
+        <button type="button" id="b-export" class="btn">Sauvegarder dans un fichier</button>
+        <button type="button" id="b-import" class="btn">Restaurer</button>
+        <input type="file" id="b-file" accept=".json,application/json" hidden>
+      </div>
+    </section>
+
+    <form id="b-form" class="card" autocomplete="off">
+      <h2>La classe</h2>
+
+      <div class="field">
+        <label for="b-class-select">Sélectionner une classe</label>
+        <select id="b-class-select"></select>
+      </div>
+
+      <div class="field">
+        <label for="b-name">Nom de la classe</label>
+        <input id="b-name" type="text" placeholder="Ex. 6e A" readonly>
+      </div>
+
+      <div class="field">
+        <label for="b-school">Établissement</label>
+        <input id="b-school" type="text" readonly>
+      </div>
+
+      <div class="field">
+        <div class="label-row">
+          <label>Élèves</label>
+          <span id="b-count" class="count"></span>
+        </div>
+        <p class="hint">Les élèves sont chargés depuis la classe sélectionnée</p>
+      </div>
+
+      <h2 class="sub-title">Nouveau billet</h2>
+
+      <div class="field">
+        <label for="b-student-select">Élève</label>
+        <select id="b-student-select"></select>
+      </div>
+
+      <div class="field">
+        <label for="b-type">Type</label>
+        <select id="b-type">
+          <option value="entree">Entrée</option>
+          <option value="sortie">Sortie</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="b-date">Date</label>
+        <input id="b-date" type="date">
+      </div>
+
+      <div class="field">
+        <label for="b-time">Heure</label>
+        <input id="b-time" type="time">
+      </div>
+
+      <div class="field">
+        <label for="b-motif">Motif</label>
+        <input id="b-motif" type="text" placeholder="Ex. Rendez-vous médical">
+      </div>
+
+      <button type="button" id="b-add" class="btn primary">Ajouter le billet</button>
+
+      <h2 class="sub-title">Historique des billets</h2>
+      <div id="b-history" class="history-list"></div>
+
+      <button type="button" id="b-delete" class="btn danger">Supprimer cette classe</button>
+    </form>
+
+  </aside>
+
+  <section class="preview" id="b-preview" aria-label="Aperçu des billets">
+    <div class="preview-head">
+      <h2>Aperçu</h2>
+      <p id="b-summary" class="summary"></p>
+    </div>
+    <div id="b-sheets" class="sheets"></div>
+  </section>
+
+  <div id="b-print-area" class="print-area" aria-hidden="true"></div>
+
+</main>
+
+<!-- ===================== Exclusions ===================== -->
+<main class="layout" id="view-exclusions" hidden>
+
+  <aside class="panel">
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Mes classes</h2>
+        <button type="button" id="e-new" class="btn">Nouvelle classe</button>
+      </div>
+      <ul id="e-class-list" class="class-list"></ul>
+      <p id="e-saved" class="saved" role="status"></p>
+      <div class="row-btns">
+        <button type="button" id="e-export" class="btn">Sauvegarder dans un fichier</button>
+        <button type="button" id="e-import" class="btn">Restaurer</button>
+        <input type="file" id="e-file" accept=".json,application/json" hidden>
+      </div>
+    </section>
+
+    <form id="e-form" class="card" autocomplete="off">
+      <h2>La classe</h2>
+
+      <div class="field">
+        <label for="e-class-select">Sélectionner une classe</label>
+        <select id="e-class-select"></select>
+      </div>
+
+      <div class="field">
+        <label for="e-name">Nom de la classe</label>
+        <input id="e-name" type="text" placeholder="Ex. 6e A" readonly>
+      </div>
+
+      <div class="field">
+        <label for="e-school">Établissement</label>
+        <input id="e-school" type="text" readonly>
+      </div>
+
+      <div class="field">
+        <div class="label-row">
+          <label>Élèves</label>
+          <span id="e-count" class="count"></span>
+        </div>
+        <p class="hint">Les élèves sont chargés depuis la classe sélectionnée</p>
+      </div>
+
+      <h2 class="sub-title">Nouvelle exclusion</h2>
+
+      <div class="field">
+        <label for="e-student-select">Élève</label>
+        <select id="e-student-select"></select>
+      </div>
+
+      <div class="field">
+        <label for="e-type">Type d'exclusion</label>
+        <select id="e-type">
+          <option value="temporaire">Temporaire</option>
+          <option value="definitive">Définitive</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="e-start-date">Date de début</label>
+        <input id="e-start-date" type="date">
+      </div>
+
+      <div class="field">
+        <label for="e-end-date">Date de fin (si définitive, laisser vide)</label>
+        <input id="e-end-date" type="date">
+      </div>
+
+      <div class="field">
+        <label for="e-duration">Durée (jours)</label>
+        <input id="e-duration" type="number" min="1" inputmode="numeric" placeholder="Ex. 3">
+      </div>
+
+      <div class="field">
+        <label for="e-motif">Motif</label>
+        <textarea id="e-motif" rows="3" placeholder="Ex. Comportement inapproprié"></textarea>
+      </div>
+
+      <button type="button" id="e-add" class="btn primary">Ajouter l'exclusion</button>
+
+      <h2 class="sub-title">Historique des exclusions</h2>
+      <div id="e-history" class="history-list"></div>
+
+      <button type="button" id="e-delete" class="btn danger">Supprimer cette classe</button>
+    </form>
+
+  </aside>
+
+  <section class="preview" id="e-preview" aria-label="Aperçu des exclusions">
+    <div class="preview-head">
+      <h2>Aperçu</h2>
+      <p id="e-summary" class="summary"></p>
+    </div>
+    <div id="e-sheets" class="sheets"></div>
+  </section>
+
+  <div id="e-print-area" class="print-area" aria-hidden="true"></div>
+
+</main>
+
+<!-- ===================== Relevés de notes ===================== -->
+<main class="layout" id="view-notes" hidden>
+
+  <aside class="panel">
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Mes relevés</h2>
+        <button type="button" id="n-new" class="btn">Nouveau relevé</button>
+      </div>
+      <ul id="n-class-list" class="class-list"></ul>
+      <p id="n-saved" class="saved" role="status"></p>
+      <div class="row-btns">
+        <button type="button" id="n-export" class="btn">Sauvegarder dans un fichier</button>
+        <button type="button" id="n-import" class="btn">Restaurer</button>
+        <input type="file" id="n-file" accept=".json,application/json" hidden>
+      </div>
+    </section>
+
+    <form id="n-form" class="card" autocomplete="off">
+      <h2>Le relevé</h2>
+
+      <div class="field">
+        <label for="n-class-select">Sélectionner une classe</label>
+        <select id="n-class-select"></select>
+      </div>
+
+      <div class="field">
+        <label for="n-class-name">Nom de la classe</label>
+        <input id="n-class-name" type="text" placeholder="Ex. 4e A REUSSITE BOWENDO" readonly>
+      </div>
+
+      <div class="field">
+        <label for="n-subject">Matière</label>
+        <input id="n-subject" type="text" placeholder="Ex. Mathématiques">
+      </div>
+
+      <div class="field">
+        <label for="n-trimester">Trimestre</label>
+        <select id="n-trimester">
+          <option value="1er">1er Trimestre</option>
+          <option value="2e">2e Trimestre</option>
+          <option value="3e">3e Trimestre</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <div class="label-row">
+          <label>Élèves</label>
+          <span id="n-count" class="count"></span>
+        </div>
+        <p class="hint">Les élèves sont chargés depuis la classe sélectionnée</p>
+      </div>
+
+      <button type="button" id="n-generate" class="btn primary">Générer le relevé</button>
+    </form>
+
+  </aside>
+
+  <section class="preview" id="n-preview" aria-label="Aperçu du relevé">
+    <div class="preview-head">
+      <h2>Aperçu</h2>
+      <p id="n-summary" class="summary"></p>
+    </div>
+    <div id="n-sheets" class="sheets"></div>
+  </section>
+
+  <div id="n-print-area" class="print-area" aria-hidden="true"></div>
+
+</main>
+
+<script src="common.js"></script>
+<script src="storage.js"></script>
+<script src="classes.js"></script>
+<script src="eleves.js"></script>
+<script src="enseignants.js"></script>
+<script src="billets.js"></script>
+<script src="exclusions.js"></script>
+<script src="notes.js"></script>
+<script src="app.js"></script>
+
+<!-- Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then((registration) => {
+          console.log('Service Worker enregistré avec succès:', registration.scope);
+        })
+        .catch((error) => {
+          console.log('Erreur lors de l\'enregistrement du Service Worker:', error);
+        });
+    });
+  }
+</script>
+</body>
+</html>
