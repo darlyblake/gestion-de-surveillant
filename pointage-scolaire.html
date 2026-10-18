@@ -508,12 +508,12 @@ body { background: #f3f5f8; color: #1b2738; }
 
       <div class="field">
         <label for="c-name">Nom de la classe</label>
-        <input id="c-name" type="text" placeholder="Ex. 6e A">
+        <input id="c-name" type="text" placeholder="">
       </div>
 
       <div class="field">
         <label for="c-year">Année scolaire</label>
-        <input id="c-year" type="text" placeholder="Ex. 2026-2027">
+        <input id="c-year" type="text" placeholder="">
       </div>
 
       <div class="field">
@@ -533,7 +533,7 @@ body { background: #f3f5f8; color: #1b2738; }
       <div class="field">
         <label for="add-name">Ajouter un élève</label>
         <div class="add-row">
-          <input id="add-name" type="text" placeholder="NOM Prénom">
+          <input id="add-name" type="text" placeholder="Nom et prénom">
           <button type="button" id="btn-add" class="btn">Ajouter</button>
         </div>
       </div>
@@ -636,7 +636,7 @@ body { background: #f3f5f8; color: #1b2738; }
 
       <div class="field">
         <label for="t-name">Nom de la classe</label>
-        <input id="t-name" type="text" placeholder="Ex. 6e A">
+        <input id="t-name" type="text" placeholder="">
       </div>
 
       <div class="field">
@@ -649,7 +649,7 @@ body { background: #f3f5f8; color: #1b2738; }
           <label for="t-teachers">Enseignants</label>
           <span id="t-count" class="count"></span>
         </div>
-        <textarea id="t-teachers" rows="10" placeholder="Collez ici un enseignant par ligne, avec sa matière après un point-virgule&#10;Ex. MBOUMBA Jean ; Mathématiques"></textarea>
+        <textarea id="t-teachers" rows="10" placeholder="Un enseignant par ligne, avec sa matière après un point-virgule"></textarea>
         <label class="check"><input type="checkbox" id="t-sort"> Classer par ordre alphabétique</label>
       </div>
       <p class="hint">Les colonnes copiées depuis Excel fonctionnent aussi : nom, puis matière.</p>
@@ -657,8 +657,8 @@ body { background: #f3f5f8; color: #1b2738; }
       <div class="field">
         <label for="t-add-name">Ajouter un enseignant</label>
         <div class="add-stack">
-          <input id="t-add-name" type="text" placeholder="NOM Prénom">
-          <input id="t-add-subject" type="text" placeholder="Matière">
+          <input id="t-add-name" type="text" placeholder="Nom et prénom">
+          <input id="t-add-subject" type="text" placeholder="Matière enseignée">
           <button type="button" id="t-add" class="btn">Ajouter</button>
         </div>
       </div>
@@ -842,15 +842,7 @@ window.PT = (() => {
   }
 
   function sampleClass() {
-    const c = newClass();
-    c.name = 'Classe exemple';
-    c.students = [
-      'MBA Sarah', 'NZE Kevin', 'OBAME Diane', 'ONDO Brice', 'MOUNGUENGUI Estelle',
-      'NGUEMA Junior', 'MOUELE Prisca', 'ELLA Grâce', 'BIYOGHE Samuel',
-      'MAGANGA Rodrigue', 'ASSOUMOU Léa', 'ISSEMBE Carine'
-    ].join('\n');
-    c.sort = true;
-    return c;
+    return newClass();
   }
 
   function load() {
@@ -1327,18 +1319,7 @@ window.PT = (() => {
   }
 
   function sampleClass() {
-    const c = newClass();
-    c.name = 'Classe exemple';
-    c.teachers = [
-      'ABESSOLO Marc ; Mathématiques',
-      'NDONG Chantal ; Français',
-      'MOUSSAVOU Pierre ; Histoire-Géographie',
-      'OKOUMBA Judith ; Anglais',
-      'BOUASSA Roland ; Physique-Chimie',
-      'MINTSA Esther ; SVT',
-      'EYENE Louis ; EPS'
-    ].join('\n');
-    return c;
+    return newClass();
   }
 
   function load() {
