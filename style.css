@@ -771,3 +771,21 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #b5c9e2; outline-
 }
 
 #view-classes .sheets { width: 100%; margin: 0; }
+
+
+/* Page Classes : une liste épurée à l'ouverture, édition seulement sur demande. */
+#view-classes.class-list-mode,
+#view-classes.class-students-mode { grid-template-columns: minmax(0, 1fr); }
+#view-classes.class-list-mode > .panel,
+#view-classes.class-students-mode > .panel { display: none; }
+#view-classes.class-list-mode > .preview,
+#view-classes.class-students-mode > .preview { grid-column: 1 / -1; min-width: 0; }
+#view-classes.class-edit-mode { grid-template-columns: minmax(0, 360px) minmax(0, 1fr); }
+#view-classes.class-edit-mode > .panel > section:first-child { display: none; }
+#view-classes .class-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+#view-classes .class-actions .btn { white-space: nowrap; }
+#view-classes .classes-table td { vertical-align: middle; }
+@media (max-width: 900px) {
+  #view-classes.class-edit-mode { grid-template-columns: minmax(0, 1fr); }
+  #view-classes .class-actions { min-width: 210px; }
+}
