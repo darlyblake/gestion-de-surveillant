@@ -537,8 +537,13 @@
       if (changed) save();
     } else {
       const active = current();
-      if (active && !active.linkedClassId) {
+      const centralClasses = PT.getCentralClasses ? PT.getCentralClasses() : [];
+      const linkIsStale = active && active.linkedClassId &&
+        !centralClasses.some((cls) => cls.id === active.linkedClassId);
+      if (active && (!active.linkedClassId || linkIsStale)) {
+        // Répare une ancienne liaison devenue invalide au lieu d'afficher « Classe non liée ».
         active.linkedClassId = classId;
+        state.currentId = active.id;
       } else {
         const next = newClass(active);
         next.linkedClassId = classId;
