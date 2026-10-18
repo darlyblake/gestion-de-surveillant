@@ -268,8 +268,8 @@
     const maxDay = days[days.length - 1];
     
     const linkedClass = PT.views.classes ? PT.views.classes.getClassById(c.linkedClassId) : null;
-    const school = linkedClass ? linkedClass.school : DEFAULT_SCHOOL;
-    const footName = linkedClass ? linkedClass.school.split(' – ')[0] || linkedClass.school : DEFAULT_SCHOOL;
+    const school = PT.getSchoolName ? PT.getSchoolName() : (linkedClass ? linkedClass.school : DEFAULT_SCHOOL);
+    const footName = PT.getSchoolName ? PT.getSchoolName() : (linkedClass ? linkedClass.school.split(' – ')[0] || linkedClass.school : DEFAULT_SCHOOL);
     const className = linkedClass ? linkedClass.name : '________________';
     const classYear = linkedClass ? linkedClass.year : '____________';
     
@@ -285,8 +285,8 @@
         const chunk = students.slice(offset, offset + c.perPage);
         page++;
         html += `<section class="sheet">
-  <h2>Fiche d’appel des élèves</h2>
-  <p class="sheet-school">${esc(school)}</p>
+  ${PT.getSchoolLogoHtml()}\n  <h2>Fiche d’appel des élèves</h2>
+  <p class="sheet-school">${esc(school)}</p>\n  ${PT.getSchoolContactHtml()}
   <div class="sheet-meta">
     <span>Classe : <b>${esc(className)}</b></span>
     <span>Année scolaire : <b>${esc(classYear)}</b></span>
