@@ -404,12 +404,12 @@ body { background: #f3f5f8; color: #1b2738; }
 
       <div class="field">
         <label for="c-name">Nom de la classe</label>
-        <input id="c-name" type="text" placeholder="Ex. 6e A">
+        <input id="c-name" type="text" placeholder="">
       </div>
 
       <div class="field">
         <label for="c-year">Année scolaire</label>
-        <input id="c-year" type="text" placeholder="Ex. 2026-2027">
+        <input id="c-year" type="text" placeholder="">
       </div>
 
       <div class="field">
@@ -429,7 +429,7 @@ body { background: #f3f5f8; color: #1b2738; }
       <div class="field">
         <label for="add-name">Ajouter un élève</label>
         <div class="add-row">
-          <input id="add-name" type="text" placeholder="NOM Prénom">
+          <input id="add-name" type="text" placeholder="Nom et prénom">
           <button type="button" id="btn-add" class="btn">Ajouter</button>
         </div>
       </div>
@@ -585,15 +585,7 @@ body { background: #f3f5f8; color: #1b2738; }
   }
 
   function sampleClass() {
-    const c = newClass();
-    c.name = 'Classe exemple';
-    c.students = [
-      'MBA Sarah', 'NZE Kevin', 'OBAME Diane', 'ONDO Brice', 'MOUNGUENGUI Estelle',
-      'NGUEMA Junior', 'MOUELE Prisca', 'ELLA Grâce', 'BIYOGHE Samuel',
-      'MAGANGA Rodrigue', 'ASSOUMOU Léa', 'ISSEMBE Carine'
-    ].join('\n');
-    c.sort = true;
-    return c;
+    return newClass();
   }
 
   function load() {
