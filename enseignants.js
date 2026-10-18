@@ -403,7 +403,9 @@
     const records = state.classes;
     const matching = records.find((item) => item.linkedClassId === classId);
     if (matching) {
+      const changed = state.currentId !== matching.id;
       state.currentId = matching.id;
+      if (changed) save();
     } else {
       const active = current();
       if (active && !active.linkedClassId) {
