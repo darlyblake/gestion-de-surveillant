@@ -284,7 +284,7 @@
         const chunk = students.slice(offset, offset + c.perPage);
         page++;
         html += `<section class="sheet">
-  <h2>Liste de présence des élèves</h2>
+  <h2>Fiche d’appel des élèves</h2>
   <p class="sheet-school">${esc(school)}</p>
   <div class="sheet-meta">
     <span>Classe : <b>${esc(className)}</b></span>
@@ -445,7 +445,7 @@
     const b = $('btn-delete');
     clearTimeout(armTimer);
     b.classList.remove('armed');
-    b.textContent = 'Supprimer cette classe';
+    b.textContent = 'Supprimer cette fiche';
   }
 
   $('btn-delete').addEventListener('click', () => {
