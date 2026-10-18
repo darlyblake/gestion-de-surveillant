@@ -402,7 +402,7 @@
     const btn = $('e-delete');
     clearTimeout(armTimer);
     btn.classList.remove('armed');
-    btn.textContent = 'Supprimer cette classe';
+    btn.textContent = 'Supprimer cette fiche';
   }
 
   $('e-delete').addEventListener('click', () => {
