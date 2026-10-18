@@ -96,7 +96,7 @@
     if (r && !r.linkedClassId && PT.getActiveClassId) r.linkedClassId = PT.getActiveClassId();
     const centralClasses = PT.views.classes ? PT.views.classes.getAllClasses() : [];
     
-    // Remplir le sélecteur de classes
+    // Remplir le sélecteur de classe du relevé
     const classSelect = $('n-class-select');
     classSelect.innerHTML = '<option value="">-- Sélectionner une classe --</option>';
     centralClasses.forEach((cls) => {
@@ -106,6 +106,20 @@
       opt.selected = cls.id === r.linkedClassId;
       classSelect.appendChild(opt);
     });
+
+    // Filtre visible en haut : il agit uniquement sur la liste des relevés enregistrés.
+    const filter = $('n-filter-class');
+    const previousFilter = filter.value;
+    filter.innerHTML = '<option value="">Toutes les classes</option>';
+    centralClasses.forEach((cls) => {
+      const opt = document.createElement('option');
+      opt.value = cls.id;
+      opt.textContent = cls.name.trim() || 'Classe sans nom';
+      filter.appendChild(opt);
+    });
+    if ([...filter.options].some((opt) => opt.value === previousFilter)) {
+      filter.value = previousFilter;
+    }
     
     // Afficher les infos de la classe liée
     if (r.linkedClassId) {
@@ -143,7 +157,10 @@
     ul.innerHTML = '';
     const centralClasses = PT.views.classes ? PT.views.classes.getAllClasses() : [];
     
-    state.relevés.forEach((r) => {
+    const classFilter = $('n-filter-class').value;
+    state.relevés
+      .filter((r) => !classFilter || r.linkedClassId === classFilter)
+      .forEach((r) => {
       const linkedClass = centralClasses.find((cls) => cls.id === r.linkedClassId);
       const className = linkedClass ? linkedClass.name.trim() : 'Classe non liée';
       const studentCount = linkedClass ? linkedClass.students.split('\n').filter(Boolean).length : 0;
@@ -283,6 +300,10 @@
     if (PT.setActiveClassId) PT.setActiveClassId(current().linkedClassId);
     save();
     fillForm();
+  });
+
+  $('n-filter-class').addEventListener('change', () => {
+    renderList();
   });
 
   $('n-class-list').addEventListener('click', (e) => {
