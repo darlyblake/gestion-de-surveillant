@@ -239,6 +239,7 @@
 
   function select(id) {
     state.currentId = id;
+    if (PT.setActiveClassId) PT.setActiveClassId(id);
     state.showingStudents = true;
     save();
     disarmDelete();
@@ -388,6 +389,7 @@
       state = { classes: [], currentId: null, showingStudents: false };
     }
     state.showingStudents = false;
+    if (state.currentId && PT.setActiveClassId) PT.setActiveClassId(state.currentId);
     fillForm();
     refresh();
     if (loaded) {
@@ -405,16 +407,19 @@
     
     // Fonction pour obtenir toutes les classes (utilisée par les autres modules)
     getAllClasses() {
+      if (!booted) boot();
       return state.classes;
     },
     
     // Fonction pour obtenir une classe par ID
     getClassById(id) {
+      if (!booted) boot();
       return state.classes.find((c) => c.id === id);
     },
     
     // Fonction pour obtenir les élèves d'une classe
     getStudents(classId) {
+      if (!booted) boot();
       const cls = state.classes.find((c) => c.id === classId);
       if (!cls) return [];
       return parseStudents(cls.students, cls.sort);
