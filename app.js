@@ -10,11 +10,13 @@
 
   // Sur l'accueil : combien de classes sont déjà enregistrées pour chaque document
   function updateHome() {
+    const classes = PT.getCentralClasses ? PT.getCentralClasses() : readClasses(KEYS.classes);
+    const count = classes.length;
     Object.keys(KEYS).forEach((k) => {
-      const n = readClasses(KEYS[k]).length;
-      $('home-' + k).textContent = n
-        ? `${n} ${plural(n, 'classe enregistrée', 'classes enregistrées')}`
-        : 'Aucune classe pour le moment';
+      const el = $('home-' + k);
+      if (el) el.textContent = count
+        ? `${count} ${plural(count, 'classe disponible', 'classes disponibles')}`
+        : 'Aucune classe enregistrée';
     });
   }
 
