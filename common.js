@@ -41,6 +41,44 @@ window.PT = (() => {
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
 
+  /* Contexte partagé : une seule classe active pour toutes les fonctionnalités. */
+  const CONTEXT_KEY = 'gestion-surveillant.context.v1';
+  function getCentralClasses() {
+    try {
+      const data = JSON.parse(localStorage.getItem('classes-centrales.v1'));
+      return data && Array.isArray(data.classes) ? data.classes : [];
+    } catch (e) { return []; }
+  }
+  function getActiveClassId() {
+    try {
+      const data = JSON.parse(localStorage.getItem(CONTEXT_KEY));
+      const classes = getCentralClasses();
+      return data && classes.some((c) => c.id === data.activeClassId) ? data.activeClassId : (classes[0] ? classes[0].id : null);
+    } catch (e) {
+      const classes = getCentralClasses();
+      return classes[0] ? classes[0].id : null;
+    }
+  }
+  function setActiveClassId(id) {
+    if (!getCentralClasses().some((c) => c.id === id)) return false;
+    try { localStorage.setItem(CONTEXT_KEY, JSON.stringify({ activeClassId: id })); } catch (e) {}
+    window.dispatchEvent(new CustomEvent('pt:active-class-changed', { detail: { classId: id } }));
+    return true;
+  }
+  function getActiveClass() {
+    const id = getActiveClassId();
+    return getCentralClasses().find((c) => c.id === id) || null;
+  }
+  function getStudentsForClass(classId) {
+    const cls = getCentralClasses().find((c) => c.id === classId);
+    if (!cls) return [];
+    const list = String(cls.students || '').split(/\r?\n/)
+      .map((line) => line.replace(/^\s*\d+\s*(?:[.)\-–:]|\t)\s*/, '').replace(/\t+/g, ' ').replace(/\s+/g, ' ').trim())
+      .filter(Boolean);
+    if (cls.sort) list.sort((a, b) => a.localeCompare(b, 'fr', { sensitivity: 'base' }));
+    return list;
+  }
+
   /* Lit la liste des classes enregistrées sous une clé (sert à l'accueil) */
   function readClasses(key) {
     try {
@@ -54,7 +92,7 @@ window.PT = (() => {
   return {
     $, pad, clamp, uid, plural, esc,
     parseISO, toISO, addDays, mondayOf, fmt, fmtShort,
-    setStatus, download, readClasses,
+    setStatus, download, readClasses, getCentralClasses, getActiveClassId, setActiveClassId, getActiveClass, getStudentsForClass,
     views: {}
   };
 })();
