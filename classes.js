@@ -15,7 +15,7 @@
 
   /* ---------- Données ---------- */
 
-  let state = { classes: [], currentId: null };
+  let state = { classes: [], currentId: null, showingStudents: false };
   let booted = false;
 
   function newClass(base) {
@@ -147,34 +147,77 @@
     });
   }
 
-  /* ---------- Aperçu ---------- */
+  /* ---------- Vue principale : liste des classes puis liste des élèves ---------- */
 
   function renderPreview() {
-    const c = current();
-    const students = parseStudents(c.students, c.sort);
     const sheets = $('cls-sheets');
     const summary = $('cls-summary');
 
-    if (!students.length) {
-      sheets.innerHTML = '<p class="empty">Aucun élève dans cette classe</p>';
-      summary.textContent = '';
+    if (!state.showingStudents) {
+      summary.textContent = `${state.classes.length} ${plural(state.classes.length, 'classe', 'classes')}`;
+      let html = '<div class="classes-main-list">';
+      html += '<div class="classes-main-toolbar"><h3>Liste des classes</h3><button type="button" class="btn primary" data-class-action="new">+ Ajouter une classe</button></div>';
+      if (!state.classes.length) {
+        html += '<p class="empty">Aucune classe enregistrée. Ajoutez votre première classe.</p>';
+      } else {
+        html += '<div class="classes-table-wrap"><table class="classes-table"><thead><tr><th>Classe</th><th>Année scolaire</th><th>Effectif</th><th>Action</th></tr></thead><tbody>';
+        state.classes.forEach((cls) => {
+          const count = parseStudents(cls.students, false).length;
+          html += `<tr><td><strong>${esc(cls.name.trim() || 'Classe sans nom')}</strong></td><td>${esc(cls.year)}</td><td>${count} ${plural(count, 'élève', 'élèves')}</td><td><button type="button" class="btn" data-class-action="open" data-id="${esc(cls.id)}">Voir les élèves</button></td></tr>`;
+        });
+        html += '</tbody></table></div>';
+      }
+      html += '</div>';
+      sheets.innerHTML = html;
       return;
     }
 
+    const c = current();
+    if (!c) {
+      state.showingStudents = false;
+      renderPreview();
+      return;
+    }
+    const students = parseStudents(c.students, c.sort);
+    summary.textContent = `${students.length} ${plural(students.length, 'élève', 'élèves')} · ${c.year}`;
+
     let html = '<div class="class-preview">';
+    html += '<div class="classes-main-toolbar"><button type="button" class="btn" data-class-action="back">← Toutes les classes</button><button type="button" class="btn primary" data-class-action="add-student">+ Ajouter des élèves</button></div>';
     html += `<h3>${esc(c.name.trim() || 'Classe sans nom')}</h3>`;
     html += `<p><strong>Établissement :</strong> ${esc(c.school)}</p>`;
     html += `<p><strong>Année scolaire :</strong> ${esc(c.year)}</p>`;
-    html += `<p><strong>Nombre d'élèves :</strong> ${students.length}</p>`;
-    html += '<ul class="student-list">';
-    students.forEach((s, i) => {
-      html += `<li>${i + 1}. ${esc(s)}</li>`;
-    });
-    html += '</ul></div>';
-
+    html += `<p><strong>Effectif :</strong> ${students.length} ${plural(students.length, 'élève', 'élèves')}</p>`;
+    html += '<h4>Liste des élèves</h4>';
+    if (!students.length) {
+      html += '<p class="empty">Aucun élève dans cette classe. Cliquez sur « Ajouter des élèves » pour commencer.</p>';
+    } else {
+      html += '<ol class="student-list">';
+      students.forEach((student) => { html += `<li>${esc(student)}</li>`; });
+      html += '</ol>';
+    }
+    html += '</div>';
     sheets.innerHTML = html;
-    summary.textContent = `${students.length} ${plural(students.length, 'élève', 'élèves')} · ${c.year}`;
   }
+
+  $('cls-sheets').addEventListener('click', (event) => {
+    const button = event.target.closest('[data-class-action]');
+    if (!button) return;
+    const action = button.dataset.classAction;
+    if (action === 'new') {
+      $('cls-new').click();
+    } else if (action === 'open') {
+      select(button.dataset.id);
+    } else if (action === 'back') {
+      state.showingStudents = false;
+      refresh();
+    } else if (action === 'add-student') {
+      const form = $('cls-form');
+      const dialog = form.dataset.actionDialog ? document.getElementById(form.dataset.actionDialog) : null;
+      if (dialog && typeof dialog.showModal === 'function') dialog.showModal();
+      else if (dialog) dialog.setAttribute('open', '');
+      $('cls-add-name').focus();
+    }
+  });
 
   /* ---------- Actions ---------- */
 
@@ -185,6 +228,7 @@
 
   function select(id) {
     state.currentId = id;
+    state.showingStudents = true;
     save();
     disarmDelete();
     fillForm();
@@ -330,9 +374,10 @@
       state = loaded;
       if (!state.classes.some((c) => c.id === state.currentId)) state.currentId = state.classes[0].id;
     } else {
-      const c = sampleClass();
-      state = { classes: [c], currentId: c.id };
+      const c = newClass();
+      state = { classes: [c], currentId: c.id, showingStudents: false };
     }
+    state.showingStudents = false;
     fillForm();
     refresh();
     if (loaded) {
