@@ -789,3 +789,17 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #b5c9e2; outline-
   #view-classes.class-edit-mode { grid-template-columns: minmax(0, 1fr); }
   #view-classes .class-actions { min-width: 210px; }
 }
+
+#view-configuration.school-config-layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(280px,.9fr);align-items:start;gap:22px}
+.school-config-panel,.school-config-preview{background:var(--panel,#fff);border:1px solid var(--border,#dbe2ea);border-radius:14px;padding:24px;min-width:0}
+.school-config-heading{margin-bottom:22px}.school-config-heading h2{margin:4px 0 8px}.school-config-heading p{margin:0}
+.school-config-layout .eyebrow{font-size:11px;letter-spacing:.09em;font-weight:700;color:var(--muted,#64748b);margin:0 0 6px}
+.school-config-layout .muted,.school-config-layout .hint{color:var(--muted,#64748b);font-size:13px;line-height:1.5}
+.school-config-form h3{font-size:15px;margin:22px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border,#dbe2ea)}
+.school-config-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.school-config-grid .field{display:flex;flex-direction:column;gap:6px;min-width:0}.school-config-grid .field-wide{grid-column:1/-1}
+.school-config-grid label,.school-logo-controls label{font-size:13px;font-weight:600}.school-config-grid input,.school-config-grid select{width:100%;min-height:42px;border:1px solid var(--border,#cbd5e1);border-radius:8px;padding:9px 11px;background:var(--input-bg,#fff);color:var(--text,#172033);font:inherit}
+.school-logo-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.school-logo-preview{width:86px;height:86px;border:1px dashed var(--border,#cbd5e1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--muted,#64748b);font-size:11px;overflow:hidden;text-align:center;padding:4px}.school-logo-preview img{width:100%;height:100%;object-fit:contain}
+.school-logo-controls{display:flex;flex-direction:column;align-items:flex-start;gap:8px}.school-logo-controls .hint{margin:0}.school-config-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.school-preview-paper{background:#fff;color:#172033;border:1px solid #dbe2ea;padding:20px 14px;min-height:210px;display:flex;align-items:center;flex-direction:column;justify-content:center;text-align:center;gap:5px;overflow-wrap:anywhere}.school-preview-paper strong{font-size:17px;line-height:1.35}.school-preview-paper span{font-size:12px;color:#475569}.school-preview-paper em{font-size:12px;margin-top:5px}.school-preview-logo img{width:54px;height:54px;object-fit:contain;margin-bottom:7px}.school-config-preview>.hint{margin-top:14px}
+.sheet-school-logo{text-align:center;margin-bottom:5px}.sheet-school-logo img{max-width:58px;max-height:58px;object-fit:contain}.sheet-school-contact{margin:2px 0 7px;text-align:center;font-size:9pt;line-height:1.25}
+@media(max-width:900px){#view-configuration.school-config-layout{grid-template-columns:minmax(0,1fr)}}@media(max-width:520px){.school-config-panel,.school-config-preview{padding:16px}.school-config-grid{grid-template-columns:minmax(0,1fr)}.school-config-grid .field-wide{grid-column:auto}}@media print{#view-configuration{display:none!important}}
