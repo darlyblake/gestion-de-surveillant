@@ -167,7 +167,7 @@
     const className = $('n-class-name').value || 'Classe';
     
     let html = `<div class="releve-container">
-      <div class="releve-header">RELEVE DES NOTES</div>
+      <div class="releve-school-header">${PT.getSchoolLogoHtml()}<strong>${esc(PT.getSchoolName ? PT.getSchoolName() : DEFAULT_SCHOOL)}</strong>${PT.getSchoolContactHtml()}</div>\n      <div class="releve-header">RELEVE DES NOTES</div>
       <div class="releve-subtitle">${esc(className)}</div>
       
       <table class="releve-table">
