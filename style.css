@@ -868,3 +868,20 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #b5c9e2; outline-
   min-height: 44px;
   font-weight: 600;
 }
+
+
+/* Le filtre de classe de la fiche d'appel reste au tout début du panneau, hors formulaire. */
+#view-eleves > .panel > .eleves-class-filter {
+  display: block;
+  margin: 0 0 18px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  background: var(--accent-soft);
+}
+#view-eleves > .panel > .eleves-class-filter select {
+  width: 100%;
+  min-height: 44px;
+  font-weight: 600;
+}
