@@ -584,7 +584,7 @@ body { background: #f3f5f8; color: #1b2738; }
     return c;
   }
 
-  function sampleClass() {
+  function createInitialClass() {
     return newClass();
   }
 
@@ -1004,7 +1004,7 @@ body { background: #f3f5f8; color: #1b2738; }
     state = loaded;
     if (!state.classes.some((c) => c.id === state.currentId)) state.currentId = state.classes[0].id;
   } else {
-    const c = sampleClass();
+    const c = createInitialClass();
     state = { classes: [c], currentId: c.id };
   }
   fillForm();
