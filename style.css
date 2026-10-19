@@ -1070,3 +1070,8 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #b5c9e2; outline-
   text-align: left;
   overflow-wrap: anywhere;
 }
+
+
+/* La vue Billets contient des règles display:grid!important : respecter explicitement hidden
+   pour que l'historique n'apparaisse jamais sur les autres pages. */
+#view-billets[hidden] { display: none !important; }
