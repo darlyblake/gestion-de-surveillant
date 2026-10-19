@@ -143,8 +143,9 @@
       .billet-paper footer{margin-top:8mm;padding-top:3mm;border-top:1px solid #dce4ee;text-align:center;font-size:8pt;color:#617188}
       @media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}.billet-paper{break-inside:avoid}}
     </style>`;
+    printWindow.onload = () => setTimeout(() => { printWindow.focus(); printWindow.print(); }, 300);
     printWindow.document.open();
-    printWindow.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Billet scolaire</title>' + css + '</head><body>' + billetMarkup(b) + '<script>window.addEventListener("load",function(){setTimeout(function(){window.focus();window.print();},250)});<\\/script></body></html>');
+    printWindow.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Billet scolaire</title>' + css + '</head><body>' + billetMarkup(b) + '</body></html>');
     printWindow.document.close();
   }
   function renderList() {
