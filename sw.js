@@ -1,10 +1,11 @@
 /* Service Worker pour l'application Gestion scolaire */
-const CACHE_NAME = 'gestion-surveillant-v20';
+const CACHE_NAME = 'gestion-surveillant-v21';
 const ASSETS = [
   './',
   './index.html',
   './style.css',
   './common.js',
+  './data/classes-complet-fusionne.json',
   './school-config.js',
   './storage.js',
   './classes.js',
