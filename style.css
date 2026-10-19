@@ -936,23 +936,19 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #b5c9e2; outline-
 #view-billets .billet-view-content { padding:22px;background:#f3f6fa }
 #view-billets .billet-dialog-actions { display:flex;justify-content:flex-end;padding:0 22px 22px }
 #view-billets .billet-paper { width:100%;max-width:680px;margin:0 auto;background:#fff;color:#111;border:0;border-radius:0;box-shadow:none;font-family:"Times New Roman",Times,serif }
-#view-billets .billet-paper-frame { min-height:390px;border:1.5px solid #111;padding:24px 28px }
-#view-billets .billet-paper-header { text-align:center;margin:0 0 22px;padding:0 0 12px;border-bottom:1px solid #222 }
-#view-billets .billet-paper-header h2 { margin:0 0 5px;color:#111;font-family:"Times New Roman",Times,serif;font-size:20px;font-style:normal;font-weight:700;text-transform:uppercase }
-#view-billets .billet-paper-header p { margin:3px 0;color:#111;font-family:"Times New Roman",Times,serif;font-size:13px;font-weight:400 }
-#view-billets .billet-paper-header .billet-address { font-size:12px }
-#view-billets .sheet-school-logo { margin:0 0 8px;text-align:center }
-#view-billets .sheet-school-logo img { max-width:54px;max-height:54px;object-fit:contain }
-#view-billets .billet-paper-title { margin:0 0 20px;padding:0;text-align:center;background:transparent;border-radius:0;color:#111;font-family:"Times New Roman",Times,serif;font-size:28px;font-weight:700;line-height:1.2;text-decoration:underline }
-#view-billets .billet-paper-reference { display:flex;justify-content:space-between;gap:16px;margin:0 0 20px;padding:7px 0;border-top:1px solid #777;border-bottom:1px solid #777;font-size:13px }
-#view-billets .billet-paper-text p { margin:0 0 13px;color:#111;font-family:"Times New Roman",Times,serif;font-size:17px;line-height:1.55;overflow-wrap:anywhere }
-#view-billets .billet-paper-text strong { font-weight:700;text-decoration:underline;text-underline-offset:2px }
-#view-billets .billet-paper-footer { display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:28px }
-#view-billets .billet-paper-place { margin:0;color:#111;font-family:"Times New Roman",Times,serif;font-size:13px }
-#view-billets .billet-paper-signature { min-width:180px;text-align:center;color:#111;font-family:"Times New Roman",Times,serif;font-size:13px }
-#view-billets .billet-paper-signature > span:first-child { font-weight:700 }
-#view-billets .billet-paper-signature-space { height:65px }
-#view-billets .billet-paper-signature > span:last-child { display:block;font-size:12px }
+#view-billets .billet-paper-frame { min-height:310px;border:1px solid #222;padding:25px 28px;background:#fff }
+#view-billets .billet-paper-header { text-align:center;margin:0 0 28px;padding:0;border:0 }
+#view-billets .billet-paper-header h2 { margin:0 0 5px;color:#111;font-family:"Times New Roman",Times,serif;font-size:17px;font-weight:700;text-transform:uppercase }
+#view-billets .billet-paper-header p { margin:0;color:#111;font-family:"Times New Roman",Times,serif;font-size:13px }
+#view-billets .billet-paper-title { margin:0 0 26px;padding:0;text-align:center;background:transparent;border:0;border-radius:0;color:#111;font-family:"Times New Roman",Times,serif;font-size:22px;font-weight:700;line-height:1.2;text-decoration:none }
+#view-billets .billet-paper-text p { margin:0 0 15px;color:#111;font-family:"Times New Roman",Times,serif;font-size:15px;line-height:1.8;overflow-wrap:anywhere }
+#view-billets .billet-paper-text .billet-document-line { text-align:left }
+#view-billets .billet-fill { text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:.5px }
+#view-billets .billet-paper-footer { display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:32px }
+#view-billets .billet-paper-place { margin:0;color:#111;font-family:"Times New Roman",Times,serif;font-size:14px }
+#view-billets .billet-paper-signature { min-width:175px;text-align:center;color:#111;font-family:"Times New Roman",Times,serif;font-size:14px }
+#view-billets .billet-paper-signature > span:first-child { font-weight:400 }
+#view-billets .billet-paper-signature-space { height:55px }
 @media(max-width:1000px) {
   #view-billets.billets-layout { grid-template-columns:minmax(0,1fr)!important }
   #view-billets > .billets-tools { grid-column:1!important;grid-row:2!important }
