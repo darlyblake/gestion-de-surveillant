@@ -41,6 +41,56 @@ window.PT = (() => {
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
 
+  /*
+   * Charge le jeu de classes livré avec l'application sur chaque appareil.
+   * Au premier lancement (ou lors d'une nouvelle version du jeu), les classes
+   * intégrées sont ajoutées aux classes locales sans dupliquer les mêmes classe/année.
+   */
+  const CLASSES_KEY = 'classes-centrales.v1';
+  const CLASSES_SEED_VERSION_KEY = 'classes-centrales.seed-version.v1';
+  const classesReady = fetch('./data/classes-complet-fusionne.json', { cache: 'no-cache' })
+    .then((response) => {
+      if (!response.ok) throw new Error('Impossible de charger le fichier des classes.');
+      return response.json();
+    })
+    .then((seed) => {
+      if (!seed || !Array.isArray(seed.classes) || !seed.classes.length) return false;
+      const seedVersion = String(seed.version || 1);
+      let installedVersion = '';
+      let stored = null;
+      try {
+        installedVersion = localStorage.getItem(CLASSES_SEED_VERSION_KEY) || '';
+        stored = JSON.parse(localStorage.getItem(CLASSES_KEY) || 'null');
+      } catch (e) {
+        return false;
+      }
+      if (installedVersion === seedVersion && stored && Array.isArray(stored.classes) && stored.classes.length) return true;
+
+      const localClasses = stored && Array.isArray(stored.classes) ? stored.classes : [];
+      const bundledClasses = seed.classes.filter((c) => c && c.id && c.name);
+      const sameClass = (a, b) => String(a.id || '') === String(b.id || '')
+        || (String(a.name || '').trim().toLocaleLowerCase('fr') === String(b.name || '').trim().toLocaleLowerCase('fr')
+          && String(a.year || '') === String(b.year || ''));
+      const merged = bundledClasses.map((item) => Object.assign({}, item));
+      localClasses.forEach((item) => {
+        if (item && item.id && !merged.some((base) => sameClass(base, item))) merged.push(item);
+      });
+      let currentId = stored && stored.currentId;
+      const current = localClasses.find((item) => item.id === currentId);
+      if (current) {
+        const equivalent = merged.find((item) => sameClass(item, current));
+        if (equivalent) currentId = equivalent.id;
+      }
+      if (!merged.some((item) => item.id === currentId)) currentId = merged[0].id;
+      localStorage.setItem(CLASSES_KEY, JSON.stringify({ classes: merged, currentId }));
+      localStorage.setItem(CLASSES_SEED_VERSION_KEY, seedVersion);
+      return true;
+    })
+    .catch((error) => {
+      console.warn('Les classes intégrées ne sont pas disponibles ; conservation des données locales.', error);
+      return false;
+    });
+
   /* Contexte partagé : une seule classe active pour toutes les fonctionnalités. */
   const CONTEXT_KEY = 'gestion-surveillant.context.v1';
   function getCentralClasses() {
@@ -93,6 +143,6 @@ window.PT = (() => {
     $, pad, clamp, uid, plural, esc,
     parseISO, toISO, addDays, mondayOf, fmt, fmtShort,
     setStatus, download, readClasses, getCentralClasses, getActiveClassId, setActiveClassId, getActiveClass, getStudentsForClass,
-    views: {}
+    classesReady, views: {}
   };
 })();
