@@ -444,8 +444,16 @@
         <input id="b-time" type="time" required>
       </div>
       <div class="field">
-        <label for="b-motif">Motif</label>
-        <textarea id="b-motif" rows="3" placeholder="Précisez le motif du billet" required></textarea>
+        <label for="b-motif">Raison</label>
+        <textarea id="b-motif" rows="3" placeholder="Raison de l’entrée ou de la sortie" required></textarea>
+      </div>
+      <div class="field" id="b-return-date-field" hidden>
+        <label for="b-return-date">Date de retour</label>
+        <input id="b-return-date" type="date">
+      </div>
+      <div class="field" id="b-return-time-field" hidden>
+        <label for="b-return-time">Heure de retour</label>
+        <input id="b-return-time" type="time">
       </div>
       <p id="b-count" class="hint"></p>
       <p id="b-saved" class="saved" role="status"></p>
