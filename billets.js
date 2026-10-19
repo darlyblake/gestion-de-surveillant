@@ -116,21 +116,35 @@
   function schoolHeader() {
     const cfg = PT.getSchoolConfig ? PT.getSchoolConfig() : {};
     const name = cfg.name || (PT.getSchoolName ? PT.getSchoolName() : 'Établissement scolaire');
+    const phone = cfg.phone ? 'TÉLÉPHONE : ' + cfg.phone : '';
     const address = [cfg.address, cfg.city].filter(Boolean).join(' · ');
-    const contact = [cfg.phone, cfg.email].filter(Boolean).join(' · ');
-    return '<header class="billet-paper-header">' + (PT.getSchoolLogoHtml ? PT.getSchoolLogoHtml() : '') + '<h2>' + esc(name) + '</h2>' + (address ? '<p>' + esc(address) + '</p>' : '') + (contact ? '<p>' + esc(contact) + '</p>' : '') + (cfg.academicYear ? '<p>Année scolaire : ' + esc(cfg.academicYear) + '</p>' : '') + '</header>';
+    return '<header class="billet-paper-header">' +
+      (PT.getSchoolLogoHtml ? PT.getSchoolLogoHtml() : '') +
+      '<h2>' + esc(name) + '</h2>' +
+      (phone ? '<p class="billet-phone">' + esc(phone) + '</p>' : '') +
+      (address ? '<p class="billet-address">' + esc(address) + '</p>' : '') +
+      '</header>';
   }
   function billetMarkup(b) {
     const isEntry = b.type === 'entree';
-    return '<article class="billet-paper ' + (isEntry ? 'billet-paper-entry' : 'billet-paper-exit') + '">' + schoolHeader() +
-      '<div class="billet-paper-title"><span>' + (isEntry ? 'BILLET D’ENTRÉE' : 'BILLET DE SORTIE') + '</span><small>' + (isEntry ? 'AUTORISATION D’ACCÈS À L’ÉTABLISSEMENT' : 'AUTORISATION DE SORTIE') + '</small></div>' +
-      '<div class="billet-paper-body"><div class="billet-paper-row"><span>Nom de l’élève</span><strong>' + esc(b.student) + '</strong></div>' +
-      '<div class="billet-paper-row"><span>Classe</span><strong>' + esc(b.className || '—') + '</strong></div>' +
-      '<div class="billet-paper-row"><span>Date</span><strong>' + dateLabel(b.date) + '</strong></div>' +
-      '<div class="billet-paper-row"><span>Heure</span><strong>' + esc(b.time || '—') + '</strong></div>' +
-      '<div class="billet-paper-motif"><span>Motif</span><p>' + esc(b.motif || 'Non précisé') + '</p></div></div>' +
-      '<div class="billet-paper-signatures"><div>Le surveillant / responsable<span></span></div><div>Signature / cachet<span></span></div></div>' +
-      '<footer>Document scolaire officiel · Émis le ' + dateLabel(String(b.createdAt || b.date).slice(0,10)) + '</footer></article>';
+    const title = isEntry ? 'BILLET D’ENTRÉE' : 'BILLET DE SORTIE';
+    const action = isEntry ? 'est autorisé à entrer dans l’établissement' : 'est autorisé à sortir de l’établissement';
+    const date = dateLabel(b.date);
+    const time = b.time || '.................';
+    const reason = b.motif || '........................................';
+    return '<article class="billet-paper ' + (isEntry ? 'billet-paper-entry' : 'billet-paper-exit') + '">' +
+      schoolHeader() +
+      '<h1 class="billet-paper-title">' + title + '</h1>' +
+      '<div class="billet-paper-text">' +
+      '<p>Nom de l’élève : <strong>' + esc(b.student || '........................................') + '</strong></p>' +
+      '<p>Classe : <strong>' + esc(b.className || '........') + '</strong>, ' + action + ' le <strong>' + esc(date) + '</strong> à <strong>' + esc(time) + '</strong>.</p>' +
+      '<p>Raison : <strong>' + esc(reason) + '</strong></p>' +
+      (isEntry ? '<p>Heure d’arrivée : <strong>' + esc(time) + '</strong></p>' : '<p>Retour le : <strong>........................</strong> à <strong>....................</strong></p>') +
+      '</div>' +
+      '<p class="billet-paper-place">Ngong, le : <strong>' + esc(date) + '</strong></p>' +
+      '<p class="billet-paper-signature">Le Surveillant Général,</p>' +
+      '<div class="billet-paper-signature-space"></div>' +
+      '</article>';
   }
   function findBillet(recordId, billetId) {
     const record = state.classes.find(c => c.id === recordId);
@@ -155,17 +169,21 @@
     const printWindow = window.open('', '_blank', 'width=900,height=700');
     if (!printWindow) { say('Autorisez les fenêtres contextuelles pour imprimer le billet.', 'bad'); return; }
     const css = `<style>
-      @page{size:A4 portrait;margin:14mm}*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#172b45;background:#fff}
-      .billet-paper{width:100%;max-width:180mm;margin:0 auto;padding:12mm;border:2px solid #17365d;border-radius:8px;position:relative}
-      .billet-paper-header{text-align:center;border-bottom:2px solid #d7e1ed;padding-bottom:8mm;margin-bottom:8mm}
-      .billet-paper-header h2{font-size:18pt;color:#17365d;margin:4mm 0 2mm}.billet-paper-header p{margin:1.5mm 0;font-size:9pt;color:#52657d}
-      .sheet-school-logo img{max-width:22mm;max-height:22mm;object-fit:contain}.billet-paper-title{text-align:center;margin:8mm 0;padding:6mm;background:#f0f5fb;border-radius:5px;color:${b.type==='entree'?'#14745d':'#b3261e'}}
-      .billet-paper-title span{display:block;font-size:19pt;font-weight:800;letter-spacing:.06em}.billet-paper-title small{display:block;margin-top:2mm;font-size:8pt;letter-spacing:.04em}
-      .billet-paper-body{margin:8mm 0}.billet-paper-row{display:flex;justify-content:space-between;gap:8mm;padding:4mm 2mm;border-bottom:1px solid #dce4ee}.billet-paper-row span,.billet-paper-motif>span{font-size:10pt;color:#617188}.billet-paper-row strong{font-size:11pt;text-align:right}
-      .billet-paper-motif{margin-top:7mm;padding:5mm;background:#f8fafc;border:1px solid #dce4ee;border-radius:5px}.billet-paper-motif p{margin:3mm 0 0;font-size:11pt;white-space:pre-wrap;overflow-wrap:anywhere}
-      .billet-paper-signatures{display:grid;grid-template-columns:1fr 1fr;gap:12mm;margin-top:18mm}.billet-paper-signatures div{font-size:9pt;font-weight:700}.billet-paper-signatures span{display:block;height:18mm;border-bottom:1px solid #617188}
-      .billet-paper footer{margin-top:8mm;padding-top:3mm;border-top:1px solid #dce4ee;text-align:center;font-size:8pt;color:#617188}
-      @media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}.billet-paper{break-inside:avoid}}
+      @page{size:A4 portrait;margin:12mm}
+      *{box-sizing:border-box}
+      body{margin:0;background:#fff;color:#000;font-family:"Times New Roman",Times,serif}
+      .billet-paper{width:100%;min-height:118mm;margin:0 auto;padding:5mm 7mm;border:2px solid #000;background:#fff;color:#000}
+      .billet-paper-header{text-align:center;margin:0 0 4mm;padding:0}
+      .billet-paper-header h2{font-size:17pt;font-style:italic;font-weight:700;text-transform:uppercase;margin:0 0 2mm;color:#000}
+      .billet-paper-header p{font-size:13pt;font-weight:700;margin:1mm 0;color:#000}
+      .sheet-school-logo img{max-width:18mm;max-height:18mm;object-fit:contain}
+      .billet-paper-title{text-align:center;font-size:21pt;font-weight:700;margin:4mm 0 8mm;color:#000}
+      .billet-paper-text p{font-size:14pt;line-height:1.8;margin:0 0 2mm;overflow-wrap:anywhere}
+      .billet-paper-text strong{font-weight:400;text-decoration:underline;text-underline-offset:2px}
+      .billet-paper-place{text-align:right;font-size:14pt;margin:4mm 8mm 2mm 0}
+      .billet-paper-signature{text-align:right;font-size:14pt;margin:0 8mm 0 0}
+      .billet-paper-signature-space{height:15mm}
+      @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.billet-paper{break-inside:avoid}}
     </style>`;
     printWindow.onload = () => setTimeout(() => { printWindow.focus(); printWindow.print(); }, 300);
     printWindow.document.open();
