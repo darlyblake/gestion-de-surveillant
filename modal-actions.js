@@ -68,7 +68,7 @@
     header.className = 'action-dialog-head';
     const title = document.createElement('h2');
     title.id = `${dialog.id}-title`;
-    title.textContent = 'Actions et paramètres';
+    title.textContent = layout.id === 'view-billets' ? 'Créer un billet' : 'Actions et paramètres';
     dialog.setAttribute('aria-labelledby', title.id);
     const close = document.createElement('button');
     close.type = 'button';
@@ -92,7 +92,7 @@
 
     // La page Classes possède ses propres boutons explicites (« Ajouter une classe »
     // et « Ajouter des élèves ») : pas de bouton générique supplémentaire.
-    if (layout.id !== 'view-classes') {
+    if (layout.id !== 'view-classes' && layout.id !== 'view-billets') {
       const previewHead = layout.querySelector('.preview-head');
       const trigger = document.createElement('button');
       trigger.type = 'button';
