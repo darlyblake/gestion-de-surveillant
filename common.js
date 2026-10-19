@@ -71,12 +71,22 @@ window.PT = (() => {
           && String(a.year || '') === String(b.year || ''));
       // Ne pas se fier uniquement au numéro de version : un ancien navigateur peut
       // déjà avoir ce marqueur sans avoir reçu toutes les classes du fichier intégré.
-      const hasAllBundledClasses = bundledClasses.every((base) =>
-        localClasses.some((item) => item && sameClass(base, item))
-      );
-      if (installedVersion === seedVersion && localClasses.length && hasAllBundledClasses) return true;
+      const hasCompleteBundledClasses = bundledClasses.every((base) => {
+        const local = localClasses.find((item) => item && sameClass(base, item));
+        return !!(local && String(local.students || '').trim());
+      });
+      if (installedVersion === seedVersion && localClasses.length && hasCompleteBundledClasses) return true;
 
-      const merged = bundledClasses.map((item) => Object.assign({}, item));
+      // Répare les fiches locales incomplètes : si une classe intégrée a perdu
+      // sa liste d'élèves, on la restaure depuis le JSON livré avec l'application.
+      // Les listes locales déjà renseignées restent intactes.
+      const merged = bundledClasses.map((base) => {
+        const local = localClasses.find((item) => item && sameClass(base, item));
+        if (!local) return Object.assign({}, base);
+        return Object.assign({}, base, local, {
+          students: String(local.students || '').trim() ? local.students : base.students
+        });
+      });
       localClasses.forEach((item) => {
         if (item && item.id && !merged.some((base) => sameClass(base, item))) merged.push(item);
       });
