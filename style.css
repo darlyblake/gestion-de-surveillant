@@ -906,7 +906,9 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #b5c9e2; outline-
 }
 
 /* Refonte du module Billets d'entrée / sortie */
-#view-billets.billets-layout { display:grid;grid-template-columns:minmax(250px,320px) minmax(0,1fr);gap:22px;align-items:start }
+#view-billets.billets-layout { display:grid;grid-template-columns:minmax(250px,320px) minmax(0,1fr)!important;gap:22px;align-items:start }
+#view-billets > .billets-tools { grid-column:1!important;grid-row:1!important; }
+#view-billets > .billets-preview { grid-column:2!important;grid-row:1!important; }
 #view-billets .billets-tools { display:flex;flex-direction:column;gap:14px;min-width:0 }
 #view-billets .billets-tools .card { width:100%;min-width:0 }
 #view-billets .billets-form h2,#view-billets .billets-backup h2 { margin-top:0;color:#17365d }
@@ -951,7 +953,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #b5c9e2; outline-
 #view-billets .billet-paper-signatures div { font-size:11px;font-weight:700 }
 #view-billets .billet-paper-signatures span { display:block;height:52px;border-bottom:1px solid #617188 }
 #view-billets .billet-paper footer { margin-top:18px;padding-top:8px;border-top:1px solid #dce4ee;text-align:center;font-size:10px;color:#617188 }
-@media(max-width:1000px){#view-billets.billets-layout{grid-template-columns:minmax(0,1fr)}#view-billets .billets-tools{order:2}#view-billets .billets-preview{order:1}}
+@media(max-width:1000px){#view-billets.billets-layout{grid-template-columns:minmax(0,1fr)!important}#view-billets > .billets-tools{grid-column:1!important;grid-row:2!important}#view-billets > .billets-preview{grid-column:1!important;grid-row:1!important}}
 @media(max-width:640px){#view-billets .billets-filters{grid-template-columns:minmax(0,1fr)}#view-billets .billets-toolbar{align-items:flex-start;flex-direction:column}#view-billets .billet-view-content{padding:10px}#view-billets .billet-paper{padding:16px}#view-billets .billet-paper-signatures{gap:12px}}
 @media print {
   body:has(#b-print-area) * { visibility:hidden!important }
