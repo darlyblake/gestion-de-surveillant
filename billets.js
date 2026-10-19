@@ -139,8 +139,7 @@
       schoolHeader() +
       '<h1 class="billet-paper-title">' + title + '</h1>' +
       '<div class="billet-paper-text">' +
-      '<p class="billet-document-line">Nom de l’élève : <span class="billet-fill">' + esc(student) + '</span></p>' +
-      '<p class="billet-document-line">Classe : <span class="billet-fill">' + esc(className) + '</span>, ' + action + ' le <span class="billet-fill">' + esc(date) + '</span>.</p>' +
+      '<p class="billet-document-line">Nom de l’élève : <span class="billet-fill">' + esc(student) + '</span> Classe : <span class="billet-fill">' + esc(className) + '</span>, ' + action + ' le <span class="billet-fill">' + esc(date) + '</span>.</p>' +
       '<p class="billet-document-line">Raison : <span class="billet-fill">' + esc(reason) + '</span></p>' +
       (isEntry
         ? '<p class="billet-document-line">Heure d’entrée : <span class="billet-fill">' + esc(time) + '</span></p>'
