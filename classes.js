@@ -162,9 +162,14 @@
 
   function renderPreview() {
     const c = current();
-    const students = parseStudents(c.students, c.sort);
     const sheets = $('cls-sheets');
     const summary = $('cls-summary');
+    if (!c) {
+      sheets.innerHTML = '<p class="empty">Aucune classe disponible. Les classes intégrées sont en cours de restauration ; rechargez la page dans quelques instants.</p>';
+      summary.textContent = '';
+      return;
+    }
+    const students = parseStudents(c.students, c.sort);
 
     if (!students.length) {
       sheets.innerHTML = '<p class="empty">Aucun élève dans cette classe</p>';
