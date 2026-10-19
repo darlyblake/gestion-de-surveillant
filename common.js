@@ -64,13 +64,18 @@ window.PT = (() => {
       } catch (e) {
         return false;
       }
-      if (installedVersion === seedVersion && stored && Array.isArray(stored.classes) && stored.classes.length) return true;
-
       const localClasses = stored && Array.isArray(stored.classes) ? stored.classes : [];
       const bundledClasses = seed.classes.filter((c) => c && c.id && c.name);
       const sameClass = (a, b) => String(a.id || '') === String(b.id || '')
         || (String(a.name || '').trim().toLocaleLowerCase('fr') === String(b.name || '').trim().toLocaleLowerCase('fr')
           && String(a.year || '') === String(b.year || ''));
+      // Ne pas se fier uniquement au numéro de version : un ancien navigateur peut
+      // déjà avoir ce marqueur sans avoir reçu toutes les classes du fichier intégré.
+      const hasAllBundledClasses = bundledClasses.every((base) =>
+        localClasses.some((item) => item && sameClass(base, item))
+      );
+      if (installedVersion === seedVersion && localClasses.length && hasAllBundledClasses) return true;
+
       const merged = bundledClasses.map((item) => Object.assign({}, item));
       localClasses.forEach((item) => {
         if (item && item.id && !merged.some((base) => sameClass(base, item))) merged.push(item);
