@@ -250,19 +250,6 @@
   });
   $('b-view-close').addEventListener('click', () => $('b-view-dialog').close());
   $('b-view-print').addEventListener('click', printViewedBillet);
-  $('b-export').addEventListener('click', () => download('billets-eleves-' + today() + '.json', JSON.stringify({ app: APP, version: 1, classes: state.classes }, null, 2)));
-  $('b-import').addEventListener('click', () => $('b-file').click());
-  $('b-file').addEventListener('change', e => {
-    const file = e.target.files[0]; e.target.value = ''; if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => { try {
-      const data = JSON.parse(reader.result), list = Array.isArray(data) ? data : data.classes;
-      if (!Array.isArray(list)) throw new Error('invalid');
-      list.forEach(raw => { const c = normalize(raw), i = state.classes.findIndex(x => x.id === c.id); if (i >= 0) state.classes[i] = c; else state.classes.push(c); });
-      save(); refresh(); say('Sauvegarde restaurée.', 'ok');
-    } catch (_) { say('Ce fichier ne contient pas une sauvegarde valide des billets.', 'bad'); } };
-    reader.readAsText(file);
-  });
   function boot() {
     booted = true; const loaded = load();
     if (loaded) state = loaded;
