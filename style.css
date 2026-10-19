@@ -192,6 +192,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .add-row .btn, .week-nav .btn { flex: none; }
 
 .row-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.row-btns .btn { flex: 1; min-width: 120px; }
 
 .saved { margin: 0; font-size: .82rem; color: var(--muted); min-height: 1.2em; }
 .saved.ok { color: var(--accent); }

@@ -1,0 +1,48 @@
+{
+  "app": "pointage-eleves",
+  "version": 1,
+  "classes": [
+    {
+      "id": "cmv4ugrnue2ih",
+      "name": "Classe exemple",
+      "year": "2026-2027",
+      "school": "Complexe Scolaire La Réussite Owendo – B.P. 46209",
+      "students": "",
+      "sort": true,
+      "start": "2026-10-12",
+      "weeks": 1,
+      "days": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "hours": 3,
+      "orient": "portrait",
+      "perPage": 30,
+      "sessions": 2
+    },
+    {
+      "id": "cmv4uhh7zkyom",
+      "name": "5eme",
+      "year": "2026-2027",
+      "school": "Complexe Scolaire La Réussite Owendo – B.P. 46209",
+      "students": "hh",
+      "sort": false,
+      "start": "2026-10-12",
+      "weeks": 1,
+      "days": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "hours": 3,
+      "orient": "portrait",
+      "perPage": 30,
+      "sessions": 2
+    }
+  ]
+}

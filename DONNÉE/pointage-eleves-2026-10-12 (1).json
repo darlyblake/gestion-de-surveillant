@@ -1,0 +1,48 @@
+{
+  "app": "pointage-eleves",
+  "version": 1,
+  "classes": [
+    {
+      "id": "cmv4ugrnue2ih",
+      "name": "Classe exemple",
+      "year": "2026-2027",
+      "school": "Complexe Scolaire La Réussite Owendo – B.P. 46209",
+      "students": "",
+      "sort": true,
+      "start": "2026-10-12",
+      "weeks": 1,
+      "days": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "hours": 3,
+      "orient": "portrait",
+      "perPage": 30,
+      "sessions": 2
+    },
+    {
+      "id": "cmv4uhh7zkyom",
+      "name": "5eme",
+      "year": "2026-2027",
+      "school": "Complexe Scolaire La Réussite Owendo – B.P. 46209",
+      "students": "MAKOUNDOU NYAVABA Krys-el Harmonie\nANAGONOU-KOUASSI -Akoua Hortense\nMANFOUMBI ELLA LAFON Joe \nNGOUTOU ASSECO ESSON David\nMBINA ARVANG GAD\nMBINI MARIVOU Elie Daniel Seth\nOTEKPOLA IMOURANE Adewale Oriyomi\nOBAME-SOSSA-Justin-Clemont\nONTSIA ANGOUE Prince Nathan\nMOUSSAVOU OUROU AKONDAN MARZOUK \nABESSOLO Esai\nGNONDO NTOUTOUME Christ\nBOUCAVEL MAKAYA Marie P\nMBIBA ONGOUA GERMANY D\nOWOWODO- Rego",
+      "sort": true,
+      "start": "2026-10-12",
+      "weeks": 1,
+      "days": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "hours": 3,
+      "orient": "landscape",
+      "perPage": 18,
+      "sessions": 2
+    }
+  ]
+}

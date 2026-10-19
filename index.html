@@ -141,13 +141,15 @@
     <section class="card">
       <div class="card-head">
         <h2>Mes classes</h2>
-        <button type="button" id="cls-new" class="btn">Nouvelle classe</button>
+        <div class="row-btns">
+          <button type="button" id="cls-new" class="btn">Nouvelle classe</button>
+          <button type="button" id="cls-import" class="btn">Restaurer</button>
+        </div>
       </div>
       <ul id="cls-class-list" class="class-list"></ul>
       <p id="cls-saved" class="saved" role="status"></p>
       <div class="row-btns">
         <button type="button" id="cls-export" class="btn">Sauvegarder dans un fichier</button>
-        <button type="button" id="cls-import" class="btn">Restaurer</button>
         <input type="file" id="cls-file" accept=".json,application/json" hidden>
       </div>
     </section>
