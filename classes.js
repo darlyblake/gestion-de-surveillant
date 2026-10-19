@@ -39,7 +39,7 @@
     c.name = String(c.name || '');
     c.year = String(c.year || base.year);
     c.school = String(c.school || DEFAULT_SCHOOL);
-    c.students = String(c.students || '');
+    c.students = Array.isArray(c.students) ? c.students.map((name) => String(name || '').trim()).filter(Boolean).join('\n') : String(c.students || '');
     c.sort = !!c.sort;
     c.createdAt = c.createdAt || base.createdAt;
     return c;
@@ -282,64 +282,84 @@
     say(`${state.classes.length} ${plural(state.classes.length, 'classe exportée', 'classes exportées')} dans ${filename}`, 'ok');
   });
 
+  // Restaurer les classes depuis une sauvegarde JSON (y compris les anciens formats).
   $('cls-import').addEventListener('click', () => $('cls-file').click());
 
   $('cls-file').addEventListener('change', (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files && e.target.files[0];
     e.target.value = '';
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const data = JSON.parse(reader.result);
-        
-        // Vérifier si c'est le format pointage-eleves (ancien format)
-        if (data.app === 'pointage-eleves' && Array.isArray(data.classes)) {
-          let importedCount = 0;
-          data.classes.forEach((legacyClass) => {
-            if (legacyClass.name && legacyClass.students) {
-              const newClassData = {
-                id: uid(),
-                name: legacyClass.name,
-                year: legacyClass.year || '2026-2027',
-                school: legacyClass.school || DEFAULT_SCHOOL,
-                students: legacyClass.students,
-                sort: legacyClass.sort || false,
-                createdAt: new Date().toISOString()
-              };
-              state.classes.push(normalize(newClassData));
-              importedCount++;
-            }
+        const data = JSON.parse(String(reader.result || ''));
+        let rawClasses = Array.isArray(data) ? data : data && Array.isArray(data.classes) ? data.classes : null;
+        if (!rawClasses || !rawClasses.length) throw new Error('Aucune classe trouvée');
+
+        // Accepte aussi les exports historiques qui stockaient les élèves sous
+        // forme de tableau ou avec un nom de champ différent.
+        const imported = rawClasses.map((raw) => {
+          if (!raw || typeof raw !== 'object') return null;
+          const name = String(raw.name || raw.nom || raw.classe || '').trim();
+          const rawStudents = raw.students ?? raw.eleves ?? raw.etudiants ?? raw.studentNames ?? '';
+          const students = Array.isArray(rawStudents)
+            ? rawStudents.map((student) => {
+                if (typeof student === 'string') return student.trim();
+                if (student && typeof student === 'object') return String(student.name || student.nom || student.fullName || '').trim();
+                return '';
+              }).filter(Boolean).join('\n')
+            : String(rawStudents || '');
+          if (!name) return null;
+          return normalize({
+            ...raw,
+            id: String(raw.id || raw.classId || '').trim() || uid(),
+            name,
+            year: raw.year || raw.annee || raw.anneeScolaire || '2026-2027',
+            school: raw.school || raw.etablissement || DEFAULT_SCHOOL,
+            students,
+            sort: raw.sort ?? raw.tri ?? false
           });
-          
-          if (importedCount > 0) {
-            save();
-            refresh();
-            select(state.classes[state.classes.length - importedCount].id);
-            say(`${importedCount} ${plural(importedCount, 'classe importée', 'classes importées')} depuis pointage-eleves`, 'ok');
-          } else {
-            say('Aucune classe valide trouvée dans le fichier', 'bad');
+        }).filter(Boolean);
+
+        if (!imported.length) throw new Error('Aucune classe valide trouvée');
+
+        let restored = 0;
+        let restoredStudents = 0;
+        let lastId = null;
+        imported.forEach((incoming) => {
+          // Priorité à l'identifiant ; sinon rapprochement par nom + année
+          // pour restaurer les élèves sans créer une deuxième classe.
+          let index = state.classes.findIndex((existing) => existing.id === incoming.id);
+          if (index < 0) {
+            index = state.classes.findIndex((existing) =>
+              String(existing.name || '').trim().toLocaleLowerCase('fr') === incoming.name.trim().toLocaleLowerCase('fr')
+              && String(existing.year || '') === incoming.year
+            );
           }
-          return;
-        }
-        
-        // Format classes-centrales (nouveau format)
-        if (data && data.app && data.app !== APP) throw new Error('autre document');
-        const list = Array.isArray(data) ? data : data.classes;
-        if (!Array.isArray(list) || !list.length) throw new Error('vide');
-        let last = null;
-        list.forEach((raw) => {
-          const c = normalize(raw);
-          const i = state.classes.findIndex((x) => x.id === c.id);
-          if (i >= 0) state.classes[i] = c; else state.classes.push(c);
-          last = c;
+          if (index >= 0) {
+            // Garder l'ID déjà utilisé par les fiches d'appel, billets et autres pages.
+            incoming.id = state.classes[index].id;
+            state.classes[index] = incoming;
+          } else {
+            state.classes.push(incoming);
+          }
+          restored++;
+          restoredStudents += parseStudents(incoming.students, false).length;
+          lastId = incoming.id;
         });
-        select(last.id);
-        say(`${list.length} ${plural(list.length, 'classe restaurée', 'classes restaurées')}.`, 'ok');
+
+        state.currentId = lastId;
+        save();
+        fillForm();
+        refresh();
+        if (PT.setActiveClassId) PT.setActiveClassId(lastId);
+        say(`${restored} ${plural(restored, 'classe restaurée', 'classes restaurées')} et ${restoredStudents} élèves récupérés depuis « ${file.name} ».`, 'ok');
       } catch (err) {
-        say('Ce fichier n\'est pas une sauvegarde des classes.', 'bad');
+        console.error('Restauration des classes impossible :', err);
+        say('Fichier JSON non reconnu. Choisissez une sauvegarde contenant une liste « classes » avec les noms des classes et des élèves.', 'bad');
       }
     };
+    reader.onerror = () => say('Impossible de lire ce fichier. Réessayez avec une autre sauvegarde JSON.', 'bad');
     reader.readAsText(file);
   });
 
