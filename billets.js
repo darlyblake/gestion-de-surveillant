@@ -171,7 +171,7 @@
     if (!save()) return;
     refresh(); say('Billet enregistré. Vous pouvez le consulter avec le bouton « Voir ».', 'ok');
     $('b-student-select').value = ''; $('b-type').value = 'entree'; $('b-date').value = today(); $('b-time').value = ''; $('b-motif').value = '';
-    const dialog = document.querySelector('#view-billets .action-dialog');
+    const dialog = $('b-form').closest('dialog');
     if (dialog && dialog.open) dialog.close();
   }
   $('b-class-select').addEventListener('change', updateStudentSelect);
