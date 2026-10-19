@@ -119,37 +119,35 @@
     const phone = cfg.phone ? 'TÉLÉPHONE : ' + cfg.phone : '';
     const address = [cfg.address, cfg.city].filter(Boolean).join(' · ');
     return '<header class="billet-paper-header">' +
-      (PT.getSchoolLogoHtml ? PT.getSchoolLogoHtml() : '') +
-      '<h2>' + esc(name) + '</h2>' +
-      (phone ? '<p class="billet-phone">' + esc(phone) + '</p>' : '') +
-      (address ? '<p class="billet-address">' + esc(address) + '</p>' : '') +
+      '<h2>LYCEE BILINGUE DE NGONG</h2>' +
+      '<p class="billet-phone">TÉLÉPHONE : 242 16 75 02</p>' +
       '</header>';
   }
   function billetMarkup(b) {
     const isEntry = b.type === 'entree';
     const title = isEntry ? 'BILLET D’ENTRÉE' : 'BILLET DE SORTIE';
-    const action = isEntry ? 'autorisé à entrer dans l’établissement' : 'autorisé à sortir de l’établissement';
+    const action = isEntry ? 'est autorisé à entrer dans l’établissement' : 'est autorisé à sortir de l’établissement';
     const date = dateLabel(b.date);
-    const time = b.time || '........................';
-    const reason = b.motif || '........................................................';
-    const cfg = PT.getSchoolConfig ? PT.getSchoolConfig() : {};
-    const place = [cfg.city, cfg.address].filter(Boolean).join(', ');
+    const time = b.time || '…………………';
+    const reason = b.motif || '……………………………………………………';
+    const className = b.className || '…………';
+    const student = b.student || '…………………………………………';
+    const returnDate = b.returnDate ? dateLabel(b.returnDate) : '…………………';
+    const returnTime = b.returnTime || '…………………';
     return '<article class="billet-paper ' + (isEntry ? 'billet-paper-entry' : 'billet-paper-exit') + '">' +
       '<div class="billet-paper-frame">' +
       schoolHeader() +
       '<h1 class="billet-paper-title">' + title + '</h1>' +
-      '<div class="billet-paper-reference"><span>Nature : <strong>' + (isEntry ? 'Entrée' : 'Sortie') + '</strong></span><span>Date : <strong>' + esc(date) + '</strong></span></div>' +
       '<div class="billet-paper-text">' +
-      '<p>Nom et prénom de l’élève : <strong>' + esc(b.student || '........................................................') + '</strong></p>' +
-      '<p>Classe : <strong>' + esc(b.className || '........................') + '</strong></p>' +
-      '<p>L’élève est ' + action + ' le <strong>' + esc(date) + '</strong> à <strong>' + esc(time) + '</strong>.</p>' +
-      '<p>Motif : <strong>' + esc(reason) + '</strong></p>' +
+      '<p class="billet-document-line">Nom de l’élève : <span class="billet-fill">' + esc(student) + '</span></p>' +
+      '<p class="billet-document-line">Classe : <span class="billet-fill">' + esc(className) + '</span>, ' + action + ' le <span class="billet-fill">' + esc(date) + '</span>.</p>' +
+      '<p class="billet-document-line">Raison : <span class="billet-fill">' + esc(reason) + '</span></p>' +
       (isEntry
-        ? '<p>Heure d’arrivée : <strong>' + esc(time) + '</strong></p>'
-        : '<p>Heure de sortie : <strong>' + esc(time) + '</strong></p><p>Retour prévu le : <strong>................................</strong> à <strong>................</strong></p>') +
+        ? '<p class="billet-document-line">Heure d’entrée : <span class="billet-fill">' + esc(time) + '</span></p>'
+        : '<p class="billet-document-line">Retour le : <span class="billet-fill">' + esc(returnDate) + '</span> à <span class="billet-fill">' + esc(returnTime) + '</span>.</p>') +
       '</div>' +
-      '<div class="billet-paper-footer"><p class="billet-paper-place">' + (place ? esc(place) + ', ' : '') + 'le <strong>' + esc(date) + '</strong></p>' +
-      '<div class="billet-paper-signature"><span>Le Surveillant Général</span><div class="billet-paper-signature-space"></div><span>Signature et cachet</span></div></div>' +
+      '<div class="billet-paper-footer"><p class="billet-paper-place">Ngong, le <span class="billet-fill">' + esc(date) + '</span></p>' +
+      '<div class="billet-paper-signature"><span>Le Surveillant Général,</span><div class="billet-paper-signature-space"></div></div></div>' +
       '</div></article>';
   }
   function findBillet(recordId, billetId) {
@@ -175,29 +173,24 @@
     const printWindow = window.open('', '_blank', 'width=900,height=700');
     if (!printWindow) { say('Autorisez les fenêtres contextuelles pour imprimer le billet.', 'bad'); return; }
     const css = `<style>
-      @page { size: A4 portrait; margin: 15mm; }
+      @page { size: A4 portrait; margin: 18mm; }
       * { box-sizing: border-box; }
       html, body { margin: 0; padding: 0; background: #fff; color: #111; }
       body { font-family: "Times New Roman", Times, serif; }
       .billet-paper { width: 100%; margin: 0 auto; padding: 0; border: 0; background: #fff; color: #111; }
-      .billet-paper-frame { min-height: 125mm; border: 1.5pt solid #111; padding: 8mm 10mm; }
-      .billet-paper-header { position: relative; text-align: center; margin: 0 0 7mm; padding: 0 0 4mm; border-bottom: 1pt solid #222; }
-      .billet-paper-header h2 { margin: 0 0 2mm; font-size: 15pt; font-weight: 700; text-transform: uppercase; color: #111; }
-      .billet-paper-header p { margin: 1mm 0; font-size: 10pt; color: #111; }
-      .sheet-school-logo { margin: 0 0 2mm; text-align: center; }
-      .sheet-school-logo img { max-width: 17mm; max-height: 17mm; object-fit: contain; }
-      .billet-paper-title { margin: 0 0 6mm; padding: 0; text-align: center; font-size: 19pt; line-height: 1.2; font-weight: 700; text-decoration: underline; color: #111; }
-      .billet-paper-reference { display: flex; justify-content: space-between; gap: 8mm; margin: 0 0 6mm; padding: 2mm 0; border-top: .5pt solid #777; border-bottom: .5pt solid #777; font-size: 10pt; }
-      .billet-paper-text p { margin: 0 0 4mm; font-size: 12pt; line-height: 1.55; overflow-wrap: anywhere; }
-      .billet-paper-text strong { font-weight: 700; text-decoration: underline; text-underline-offset: 1.5pt; }
-      .billet-paper-footer { display: flex; justify-content: space-between; align-items: flex-end; gap: 8mm; margin-top: 8mm; }
+      .billet-paper-frame { min-height: 100mm; border: 0; padding: 0; }
+      .billet-paper-header { text-align: center; margin: 0 0 28px; padding: 0; border: 0; }
+      .billet-paper-header h2 { margin: 0 0 5px; font-size: 13pt; font-weight: 700; text-transform: uppercase; color: #111; }
+      .billet-paper-header p { margin: 0; font-size: 10pt; color: #111; }
+      .billet-paper-title { margin: 0 0 26px; padding: 0; text-align: center; font-size: 16pt; line-height: 1.2; font-weight: 700; color: #111; }
+      .billet-paper-text p { margin: 0 0 11pt; font-size: 12pt; line-height: 1.8; overflow-wrap: anywhere; }
+      .billet-fill { text-decoration: underline; text-underline-offset: 2pt; }
+      .billet-paper-footer { display: flex; justify-content: space-between; align-items: flex-end; gap: 8mm; margin-top: 26pt; }
       .billet-paper-place { margin: 0; font-size: 10pt; }
-      .billet-paper-signature { min-width: 48mm; text-align: center; font-size: 10pt; }
-      .billet-paper-signature > span:first-child { font-weight: 700; }
-      .billet-paper-signature-space { height: 17mm; }
-      .billet-paper-signature > span:last-child { display: block; font-size: 9pt; }
+      .billet-paper-signature { min-width: 45mm; text-align: center; font-size: 10pt; }
+      .billet-paper-signature-space { height: 16mm; }
       @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .billet-paper-frame { break-inside: avoid; } }
-    </style>`;
+    </style>`
     printWindow.document.open();
     printWindow.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + (b.type === 'entree' ? 'Billet d’entrée' : 'Billet de sortie') + '</title>' + css + '</head><body>' + billetMarkup(b) + '</body></html>');
     printWindow.document.close();
@@ -220,19 +213,26 @@
   function addBillet() {
     const classId = $('b-class-select').value, student = $('b-student-select').value;
     const type = $('b-type').value, date = $('b-date').value, time = $('b-time').value, motif = $('b-motif').value.trim();
+    const returnDate = $('b-return-date').value, returnTime = $('b-return-time').value;
     if (!classId) { say('Sélectionnez une classe.', 'bad'); return; }
     if (!student) { say('Sélectionnez un élève de la classe choisie.', 'bad'); return; }
     if (!date || !time || !motif) { say('Renseignez la date, l’heure et le motif du billet.', 'bad'); return; }
     let record = state.classes.find(c => c.linkedClassId === classId);
     if (!record) { record = { id: uid(), linkedClassId: classId, billets: [] }; state.classes.push(record); }
-    record.billets.push({ id: uid(), student, type, date, time, motif, createdAt: new Date().toISOString() });
+    record.billets.push({ id: uid(), student, type, date, time, motif, returnDate: type === 'sortie' ? returnDate : '', returnTime: type === 'sortie' ? returnTime : '', createdAt: new Date().toISOString() });
     state.currentId = record.id;
     if (!save()) return;
     refresh(); say('Billet enregistré. Vous pouvez le consulter avec le bouton « Voir ».', 'ok');
-    $('b-student-select').value = ''; $('b-type').value = 'entree'; $('b-date').value = today(); $('b-time').value = ''; $('b-motif').value = '';
+    $('b-student-select').value = ''; $('b-type').value = 'entree'; $('b-date').value = today(); $('b-time').value = ''; $('b-motif').value = ''; $('b-return-date').value = ''; $('b-return-time').value = ''; updateReturnFields();
     const dialog = $('b-form').closest('dialog');
     if (dialog && dialog.open) dialog.close();
   }
+  function updateReturnFields() {
+    const isExit = $('b-type').value === 'sortie';
+    $('b-return-date-field').hidden = !isExit;
+    $('b-return-time-field').hidden = !isExit;
+  }
+  $('b-type').addEventListener('change', updateReturnFields);
   $('b-class-select').addEventListener('change', updateStudentSelect);
   $('b-new').addEventListener('click', () => {
     $('b-date').value = $('b-date').value || today();
@@ -269,6 +269,7 @@
     if (loaded) state = loaded;
     else { const c = newClass(); state = { classes: [c], currentId: c.id }; }
     fillClassSelect();
+    updateReturnFields();
     $('b-date').value = today();
     const now = new Date(); $('b-time').value = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
     refresh();
