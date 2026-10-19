@@ -40,24 +40,48 @@
     catch (_) { say('Enregistrement impossible : le stockage du navigateur est indisponible.', 'bad'); return false; }
   }
   const current = () => state.classes.find(c => c.id === state.currentId) || state.classes[0];
-  const centralClasses = () => PT.getCentralClasses ? PT.getCentralClasses() : [];
+  // Utilise d'abord le module central des classes : il charge et normalise ses données
+  // depuis le stockage partagé avant que les billets ne les consomment.
+  function centralClasses() {
+    try {
+      if (PT.views && PT.views.classes && typeof PT.views.classes.getAllClasses === 'function') {
+        const classes = PT.views.classes.getAllClasses();
+        if (Array.isArray(classes)) return classes;
+      }
+    } catch (_) {}
+    try {
+      const classes = PT.getCentralClasses ? PT.getCentralClasses() : [];
+      return Array.isArray(classes) ? classes : [];
+    } catch (_) { return []; }
+  }
   function parseStudents(text) {
     const list = String(text || '').split(/\r?\n/).map(line => line.replace(/^\s*\d+\s*(?:[.)\-–:]|\t)\s*/, '').replace(/\t+/g, ' ').replace(/\s+/g, ' ').trim()).filter(Boolean);
     return list;
   }
   function getLinkedClass(record) { return centralClasses().find(cls => cls.id === record.linkedClassId) || null; }
-  function getStudents(classId) { const cls = centralClasses().find(item => item.id === classId); return cls ? parseStudents(cls.students) : []; }
+  function getStudents(classId) {
+    if (PT.getStudentsForClass) {
+      try {
+        const students = PT.getStudentsForClass(classId);
+        if (Array.isArray(students) && students.length) return students;
+      } catch (_) {}
+    }
+    const cls = centralClasses().find(item => String(item.id) === String(classId));
+    if (!cls) return [];
+    const raw = Array.isArray(cls.students) ? cls.students.join('\\n') : cls.students;
+    return parseStudents(raw);
+  }
   function fillClassSelect() {
     const select = $('b-class-select'), filter = $('b-filter-class'), classes = centralClasses();
     const selected = select.value || (current() && current().linkedClassId) || (PT.getActiveClassId && PT.getActiveClassId()) || '';
     select.innerHTML = '<option value="">Sélectionner une classe</option>';
     filter.innerHTML = '<option value="">Toutes les classes</option>';
-    classes.forEach(cls => {
+    classes.filter(cls => cls && cls.id).forEach(cls => {
       const name = String(cls.name || 'Classe sans nom').trim();
       select.add(new Option(name, cls.id));
       filter.add(new Option(name, cls.id));
     });
-    if (classes.some(cls => cls.id === selected)) select.value = selected;
+    if (classes.some(cls => String(cls.id) === String(selected))) select.value = selected;
     else if (classes[0]) select.value = classes[0].id;
     updateStudentSelect();
   }
@@ -70,7 +94,7 @@
   function allBillets() {
     const classes = centralClasses(), rows = [];
     state.classes.forEach(record => {
-      const cls = classes.find(item => item.id === record.linkedClassId);
+      const cls = classes.find(item => String(item.id) === String(record.linkedClassId));
       (record.billets || []).forEach((billet, index) => rows.push({ ...billet, recordId: record.id, recordIndex: index, classId: record.linkedClassId || '', className: cls ? String(cls.name || '').trim() : 'Classe non liée' }));
     });
     return rows.sort((a,b) => String(b.createdAt || b.date).localeCompare(String(a.createdAt || a.date)));
@@ -113,7 +137,7 @@
     if (!record) return null;
     const index = record.billets.findIndex(b => b.id === billetId);
     if (index < 0) return null;
-    const cls = centralClasses().find(c => c.id === record.linkedClassId);
+    const cls = centralClasses().find(c => String(c.id) === String(record.linkedClassId));
     return { ...record.billets[index], recordId, recordIndex: index, classId: record.linkedClassId || '', className: cls ? String(cls.name || '').trim() : 'Classe non liée' };
   }
   function showBillet(recordId, billetId) {
