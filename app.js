@@ -20,7 +20,21 @@
     });
   }
 
+  let classesReady = false;
+  let waitingForClasses = false;
+
   function route() {
+    if (!classesReady && PT.classesReady) {
+      if (!waitingForClasses) {
+        waitingForClasses = true;
+        PT.classesReady.finally(() => {
+          classesReady = true;
+          waitingForClasses = false;
+          route();
+        });
+      }
+      return;
+    }
     const name = (location.hash || '').replace(/^#\/?/, '');
     const key = VIEWS[name] ? name : 'home';
 
