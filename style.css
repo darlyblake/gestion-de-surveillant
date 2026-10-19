@@ -960,3 +960,6 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #b5c9e2; outline-
   #b-print-area,#b-print-area * { visibility:visible!important }
   #b-print-area { display:block!important;position:static!important }
 }
+
+/* Le formulaire de création est déplacé dans la fenêtre modale par modal-actions.js. */
+.action-dialog .billets-form textarea { width:100%; min-height:82px; resize:vertical; }
