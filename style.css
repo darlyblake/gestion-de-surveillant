@@ -1030,3 +1030,42 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #b5c9e2; outline-
     min-width: 680px;
   }
 }
+
+
+/* Centrage renforcé de l'historique des billets sur toute la largeur disponible. */
+#view-billets.layout.billets-layout {
+  width: 100% !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+  justify-items: stretch !important;
+}
+#view-billets.layout.billets-layout > #b-preview.billets-preview {
+  display: block !important;
+  justify-self: stretch !important;
+  align-self: start !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+#view-billets #b-preview .billets-table-wrap {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+}
+#view-billets #b-preview .billets-table {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 auto !important;
+  table-layout: fixed !important;
+  border-collapse: collapse;
+}
+#view-billets #b-preview .billets-table th,
+#view-billets #b-preview .billets-table td {
+  box-sizing: border-box;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
