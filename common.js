@@ -69,22 +69,33 @@ window.PT = (() => {
       const sameClass = (a, b) => String(a.id || '') === String(b.id || '')
         || (String(a.name || '').trim().toLocaleLowerCase('fr') === String(b.name || '').trim().toLocaleLowerCase('fr')
           && String(a.year || '') === String(b.year || ''));
-      // Ne pas se fier uniquement au numéro de version : un ancien navigateur peut
-      // déjà avoir ce marqueur sans avoir reçu toutes les classes du fichier intégré.
+      const studentCount = (value) => String(value || '').split(/\r?\n/)
+        .map((line) => line.replace(/^\s*\d+\s*(?:[.)\-–:]|\t)\s*/, '').replace(/\t+/g, ' ').replace(/\s+/g, ' ').trim())
+        .filter(Boolean).length;
+      const isLocalStudentListComplete = (base, local) => {
+        if (!local) return false;
+        const expected = studentCount(base.students);
+        const actual = studentCount(local.students);
+        // Une liste très courte par rapport à la liste intégrée est considérée
+        // comme tronquée/corrompue et doit être restaurée depuis le fichier livré.
+        const minimumExpected = expected <= 2 ? expected : Math.ceil(expected * 0.7);
+        return actual >= minimumExpected;
+      };
+      // Le marqueur de version ne suffit pas : vérifier aussi que chaque classe
+      // contient une liste d'élèves d'une taille cohérente avec la référence.
       const hasCompleteBundledClasses = bundledClasses.every((base) => {
         const local = localClasses.find((item) => item && sameClass(base, item));
-        return !!(local && String(local.students || '').trim());
+        return isLocalStudentListComplete(base, local);
       });
       if (installedVersion === seedVersion && localClasses.length && hasCompleteBundledClasses) return true;
 
-      // Répare les fiches locales incomplètes : si une classe intégrée a perdu
-      // sa liste d'élèves, on la restaure depuis le JSON livré avec l'application.
-      // Les listes locales déjà renseignées restent intactes.
+      // Répare les listes vides ou manifestement tronquées. Les listes locales
+      // suffisamment complètes sont conservées, ainsi que les classes personnalisées.
       const merged = bundledClasses.map((base) => {
         const local = localClasses.find((item) => item && sameClass(base, item));
         if (!local) return Object.assign({}, base);
         return Object.assign({}, base, local, {
-          students: String(local.students || '').trim() ? local.students : base.students
+          students: isLocalStudentListComplete(base, local) ? local.students : base.students
         });
       });
       localClasses.forEach((item) => {
