@@ -1,0 +1,78 @@
+{
+  "app": "classes-centrales",
+  "version": 1,
+  "classes": [
+    {
+      "id": "cmv4uhh7zkyom",
+      "name": "5eme",
+      "year": "2026-2027",
+      "school": "Complexe Scolaire La Réussite Owendo – B.P. 46209",
+      "students": "MAROUNDOU NYAVABA Krys-el Harmonie\nANAGONOU-KOUASSI -Akoua Hortense\nMANFOUMBI ELLA LAFOU Joe\nNGOULOU ASSECO ESSON David\nMBIRA ARVANG GAD\nMBINI MARIVOU Elie Daniel Seth\nOTEKPOLA IMOURANE Adewale Oriyomi\nOBAME-SOSSA Justin-Clemont\nONTSIA ANGOUE Prince Nathan\nMOUSSAVOU OUROU AKONDAN MARZOUK\nABESSOLO Esai\nGNONDO NTOUTOUME Christ\nBOUCAVEL MAKAYA Marie P\nMBIBA ONGOUA GERMANY D\nOWONO Dorego\nMAROUNDOU ITOM Esther",
+      "sort": true,
+      "createdAt": "2026-10-12T00:00:00.000Z"
+    },
+    {
+      "id": "cmv4zdbdqdehy",
+      "name": "4eme",
+      "year": "2026-2027",
+      "school": "Complexe Scolaire La Réussite Owendo – B.P. 46209",
+      "students": "OFOUNDA Isaac\nBOULINGUI MOUSSODJI Van Aroih\nNZE MOUBOGHA Laurel Josue\nEYAMANE NDOUNGA Samuel T\nMOUBOHA BINGOUMOU Precieux R\nNTSEMENA Marc Elie M\nMAVOUNGOU Ysmael Jacob\nBEKALE MBONE Cedrick\nDUABA SOSSA Laurel Axelle\nMOUVANGUI KOUMBA BOUASSA\nMAKANGA Alix\nKEBGUE Zita Esther\nMAGNAHOU IBALA Jhon\nNDOUME NKOGHE PATRICK\nNZOUA ESTHER BRISCA\nALI EMIALYAKA Hectore",
+      "sort": true,
+      "createdAt": "2026-10-12T00:00:00.000Z"
+    },
+    {
+      "id": "cmv4zdh1kt9bw",
+      "name": "3eme",
+      "year": "2026-2027",
+      "school": "Complexe Scolaire La Réussite Owendo – B.P. 46209",
+      "students": "NGUEMA MINTOGO Manasse\nNZEGUE MAKONDJO Esekiel\nMAKAYA BOUYEKI Aime E\nONGOUARI Sadia Esther\nNINGONOTALIO NGOMA Evangegeline\nMONDJOT MOUIRI Djeddah\nMAVANDJI ANGOUORI Abraham W\nNZIGOUNZIGOU Kedhy F\nOUANGO Eurielle L\nSEMBAT MOUTSINGA Tony\nNDZOBANI ABAGASSELIGUI Esther\nGUEBOKO Sermel Abigael\nNDZOBANI MBELEYOUELE Esther\nMABIALA MONBO Chris Sergenis",
+      "sort": true,
+      "createdAt": "2026-10-12T00:00:00.000Z"
+    },
+    {
+      "id": "cmv4zdq5m328t",
+      "name": "2 end",
+      "year": "2026-2027",
+      "school": "Complexe Scolaire La Réussite Owendo – B.P. 46209",
+      "students": "MOUELE ABAGASSELIGUI Darcia\nNGABI MOHAMED\nSOSSY Karl Patrick\nMENGUE MEBIAME Marvine Daniel\nNGAMBA OPAPE Ericka G\nBISSALOU MOUGHENE GRACE M\nNZUE NKENSA Emmanuel Junior\nMAHOMBO ITSETSAME Lesly P\nTANGA DIKALIMAMBO Stescy E",
+      "sort": true,
+      "createdAt": "2026-10-12T00:00:00.000Z"
+    },
+    {
+      "id": "cmv4zdvd875pe",
+      "name": "1er B",
+      "year": "2026-2027",
+      "school": "Complexe Scolaire La Réussite Owendo – B.P. 46209",
+      "students": "NGOUALI ABAGUA Divine Olivia\nNGOMBI Princesse Priscille\nNGOMBI Prince Noe\nMAKAYA Crhys Mathys\nOWPURI JUNIOR\nMAGNAMABANI NEKE Firmin Wham\nTCHICAYA Preson Armel",
+      "sort": true,
+      "createdAt": "2026-10-12T00:00:00.000Z"
+    },
+    {
+      "id": "cmv4zoymeltth",
+      "name": "Tle A1",
+      "year": "2026-2027",
+      "school": "Complexe Scolaire La Réussite Owendo – B.P. 46209",
+      "students": "NTSEMENA Gloria Christie L\nMAILA Rodney\nLEBANDA ONITSA Pressy Fred\nPOPONA AMAVI Anita\nACHA TCHADEU Bil Jessica",
+      "sort": false,
+      "createdAt": "2026-10-12T00:00:00.000Z"
+    },
+    {
+      "id": "cmv52modlkp2u",
+      "name": "Tle B",
+      "year": "2026-2027",
+      "school": "Complexe Scolaire La Réussite Owendo – B.P. 46209",
+      "students": "NTSEMENA Noelly Sharon D",
+      "sort": true,
+      "createdAt": "2026-10-12T00:00:00.000Z"
+    },
+    {
+      "id": "cmv53qikuwexj",
+      "name": "6eme B",
+      "year": "2026-2027",
+      "school": "Complexe Scolaire La Réussite Owendo – B.P. 46209",
+      "students": "OBAME N'NANG Andre Paul\nFOMOTSA NKOMO Asaph\nYOUBI THINY Gaston Valery\nKASSA SOSSA Yvette Keimie\nBEKALE ABOGHE Viguy Ephraim\nMINKO SINGA Jessie\nELISHA JOACHIME EPANGUE Moses\nLEKELE Noe\nMOUNGUENGUI Joel\nPOPONA Marie Clair M\nWISSY TENDA UN Aimée Christ\nBENGONE OWONA Marrion\nTCHINGA BIGNOUMBA Serelia\nZONG ALLOGO Thionne H\nATAYI NDONG Emmanuella\nNDJIMBI FRANCKY\nBEANG NINGONE Diamanda\nOGYABIE MINKO Elie\nBETHOLE ADA\nBENGA BENGOME Kendra\nNGOUA Elisée Geremie\nMBILA THINY Gaston Valery",
+      "sort": true,
+      "createdAt": "2026-10-12T00:00:00.000Z"
+    }
+  ]
+}
