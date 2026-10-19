@@ -415,100 +415,76 @@
 </main>
 
 <!-- ===================== Billets d'entrée/sortie ===================== -->
-<main class="layout" id="view-billets" hidden>
-
-  <aside class="panel">
-
-    <section class="card">
-      <div class="card-head">
-        <h2>Historique des billets</h2>
-        <button type="button" id="b-new" class="btn">Nouvelle fiche</button>
-      </div>
-      <ul id="b-class-list" class="class-list"></ul>
-      <p id="b-saved" class="saved" role="status"></p>
-      <div class="row-btns">
-        <button type="button" id="b-export" class="btn">Sauvegarder dans un fichier</button>
-        <button type="button" id="b-import" class="btn">Restaurer</button>
-        <input type="file" id="b-file" accept=".json,application/json" hidden>
-      </div>
-    </section>
-
-    <form id="b-form" class="card" autocomplete="off">
-      <h2>La classe</h2>
-
+<main class="layout billets-layout" id="view-billets" hidden>
+  <aside class="panel billets-tools">
+    <form id="b-form" class="card billets-form" autocomplete="off">
+      <h2>Créer un billet</h2>
+      <p class="hint">Choisissez la classe, puis l’élève concerné et les informations du billet.</p>
       <div class="field">
-        <label for="b-class-select">Sélectionner une classe</label>
-        <select id="b-class-select"></select>
+        <label for="b-class-select">Classe</label>
+        <select id="b-class-select" required></select>
       </div>
-
-      <div class="field">
-        <label for="b-name">Nom de la classe</label>
-        <input id="b-name" type="text" placeholder="" readonly>
-      </div>
-
-      <div class="field">
-        <label for="b-school">Établissement</label>
-        <input id="b-school" type="text" readonly>
-      </div>
-
-      <div class="field">
-        <div class="label-row">
-          <label>Élèves</label>
-          <span id="b-count" class="count"></span>
-        </div>
-        <p class="hint">Les élèves sont chargés depuis la classe sélectionnée</p>
-      </div>
-
-      <h2 class="sub-title">Nouveau billet</h2>
-
       <div class="field">
         <label for="b-student-select">Élève</label>
-        <select id="b-student-select"></select>
+        <select id="b-student-select" required></select>
       </div>
-
       <div class="field">
-        <label for="b-type">Type</label>
-        <select id="b-type">
+        <label for="b-type">Type de billet</label>
+        <select id="b-type" required>
           <option value="entree">Entrée</option>
           <option value="sortie">Sortie</option>
         </select>
       </div>
-
       <div class="field">
         <label for="b-date">Date</label>
-        <input id="b-date" type="date">
+        <input id="b-date" type="date" required>
       </div>
-
       <div class="field">
         <label for="b-time">Heure</label>
-        <input id="b-time" type="time">
+        <input id="b-time" type="time" required>
       </div>
-
       <div class="field">
         <label for="b-motif">Motif</label>
-        <input id="b-motif" type="text" placeholder="">
+        <textarea id="b-motif" rows="3" placeholder="Précisez le motif du billet" required></textarea>
       </div>
-
-      <button type="button" id="b-add" class="btn primary">Ajouter le billet</button>
-
-      <h2 class="sub-title">Historique des billets</h2>
-      <div id="b-history" class="history-list"></div>
-
-      <button type="button" id="b-delete" class="btn danger">Supprimer cette classe</button>
+      <p id="b-count" class="hint"></p>
+      <p id="b-saved" class="saved" role="status"></p>
+      <button type="button" id="b-add" class="btn primary">Enregistrer le billet</button>
     </form>
-
+    <section class="card billets-backup">
+      <h2>Sauvegarde</h2>
+      <p class="hint">Exportez ou restaurez les billets enregistrés sur cet appareil.</p>
+      <div class="row-btns">
+        <button type="button" id="b-export" class="btn">Exporter</button>
+        <button type="button" id="b-import" class="btn">Restaurer</button>
+        <input type="file" id="b-file" accept=".json,application/json" hidden>
+      </div>
+    </section>
   </aside>
-
-  <section class="preview" id="b-preview" aria-label="Aperçu des billets">
-    <div class="preview-head">
-      <h2>Aperçu</h2>
-      <p id="b-summary" class="summary"></p>
+  <section class="preview billets-preview" id="b-preview" aria-label="Historique des billets">
+    <div class="preview-head billets-toolbar">
+      <div><h2>Historique des billets</h2><p id="b-summary" class="summary">Retrouvez et consultez les billets enregistrés.</p></div>
+      <button type="button" id="b-new" class="btn primary">Créer un billet</button>
     </div>
-    <div id="b-sheets" class="sheets"></div>
+    <div class="billets-filters">
+      <div class="field"><label for="b-search">Rechercher un élève</label><input id="b-search" type="search" placeholder="Saisir le nom de l’élève…"></div>
+      <div class="field"><label for="b-filter-class">Filtrer par classe</label><select id="b-filter-class"><option value="">Toutes les classes</option></select></div>
+      <div class="field"><label for="b-filter-type">Type de billet</label><select id="b-filter-type"><option value="">Tous les types</option><option value="entree">Entrée</option><option value="sortie">Sortie</option></select></div>
+    </div>
+    <div class="billets-table-wrap">
+      <table class="billets-table">
+        <thead><tr><th>Élève</th><th>Classe</th><th>Type</th><th>Motif</th><th>Date</th><th>Heure</th><th>Action</th></tr></thead>
+        <tbody id="b-table-body"></tbody>
+      </table>
+    </div>
+    <p id="b-empty" class="empty" hidden>Aucun billet ne correspond à votre recherche.</p>
   </section>
-
+  <dialog id="b-view-dialog" class="billet-view-dialog" aria-labelledby="b-view-title">
+    <div class="billet-dialog-head"><h2 id="b-view-title">Billet scolaire</h2><button type="button" id="b-view-close" class="action-dialog-close" aria-label="Fermer">×</button></div>
+    <div id="b-view-content" class="billet-view-content"></div>
+    <div class="billet-dialog-actions"><button type="button" id="b-view-print" class="btn primary">Imprimer le billet</button></div>
+  </dialog>
   <div id="b-print-area" class="print-area" aria-hidden="true"></div>
-
 </main>
 
 <!-- ===================== Exclusions ===================== -->
