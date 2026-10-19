@@ -223,7 +223,7 @@
       <span class="signature-line">Cachet de l'établissement :</span>
     </div>
   </div>
-  <div class="sheet-page">Émis le ${fmt(parseISO(billet.createdAt))}</div>
+  <div class="sheet-page">Émis le ${fmt(parseISO(String(billet.createdAt || billet.date || '').slice(0, 10)))}</div>
 </section>`;
   }
 
@@ -237,8 +237,14 @@
     const school = PT.getSchoolName ? PT.getSchoolName() : (linkedClass ? linkedClass.school : DEFAULT_SCHOOL);
     
     const printArea = $('b-print-area');
-    printArea.innerHTML = generateBilletSheet(billet, school);
-    window.print();
+    try {
+      printArea.innerHTML = generateBilletSheet(billet, school);
+      // Laisser le navigateur appliquer les styles d'impression avant d'ouvrir la boîte de dialogue.
+      requestAnimationFrame(() => window.print());
+    } catch (error) {
+      console.error('Impossible de préparer le billet pour impression :', error);
+      say('Impossible de préparer ce billet pour impression. Vérifiez les données du billet puis réessayez.', 'bad');
+    }
   }
 
   /* ---------- Historique des billets ---------- */
