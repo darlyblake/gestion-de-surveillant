@@ -168,12 +168,30 @@
 
   function getStudentsFromLinkedClass() {
     const c = current();
-    if (!c.linkedClassId) return [];
-    
-    const centralClasses = PT.views.classes ? PT.views.classes.getAllClasses() : [];
-    const linkedClass = centralClasses.find((cls) => cls.id === c.linkedClassId);
+    if (!c) return [];
+
+    // Lire l'identifiant du sélecteur directement évite de dépendre d'une ancienne
+    // liaison mémorisée dans la fiche d'appel.
+    const select = $('c-class-select');
+    const selectedId = select && select.value ? select.value : c.linkedClassId;
+    const centralClasses = PT.getCentralClasses
+      ? PT.getCentralClasses()
+      : (PT.views.classes ? PT.views.classes.getAllClasses() : []);
+    let linkedClass = centralClasses.find((cls) => String(cls.id) === String(selectedId));
+
+    // Réparer les anciennes liaisons si l'identifiant a changé mais que le nom de
+    // classe correspond encore à une classe centralisée.
+    if (!linkedClass && c.linkedClassId) {
+      const oldClass = centralClasses.find((cls) => String(cls.id) === String(c.linkedClassId));
+      const wantedName = String(oldClass && oldClass.name || (select && select.selectedOptions[0] && select.selectedOptions[0].textContent) || '').trim().toLocaleLowerCase('fr');
+      if (wantedName) linkedClass = centralClasses.find((cls) => String(cls.name || '').trim().toLocaleLowerCase('fr') === wantedName);
+    }
     if (!linkedClass) return [];
-    
+
+    if (c.linkedClassId !== linkedClass.id) {
+      c.linkedClassId = linkedClass.id;
+    }
+
     const list = String(linkedClass.students || '')
       .split(/\r?\n/)
       .map((line) => line
@@ -306,13 +324,23 @@
 
   function renderPreview() {
     const c = current();
-    const students = getStudentsFromLinkedClass();
-    const start = parseISO(c.start);
-    const days = DAYS.filter((d) => c.days.includes(d.n));
     const sheets = $('sheets');
     const printArea = $('print-area');
     const empty = $('empty');
     const warn = $('warn');
+    if (!c) {
+      sheets.innerHTML = '';
+      printArea.innerHTML = '';
+      empty.textContent = 'Aucune fiche d’appel disponible. Sélectionnez ou créez une fiche.';
+      empty.hidden = false;
+      $('count').textContent = '';
+      $('summary').textContent = '';
+      $('btn-print').disabled = true;
+      return;
+    }
+    const students = getStudentsFromLinkedClass();
+    const start = parseISO(c.start);
+    const days = DAYS.filter((d) => c.days.includes(d.n));
     const landscape = c.orient === 'landscape';
 
     $('count').textContent = students.length
@@ -415,8 +443,12 @@
   $('class-form').addEventListener('submit', (e) => e.preventDefault());
 
   $('c-class-select').addEventListener('change', () => {
+    const selectedId = $('c-class-select').value || null;
+    const c = current();
+    if (!c) return;
+    c.linkedClassId = selectedId;
     readForm();
-    if (PT.setActiveClassId) PT.setActiveClassId(current().linkedClassId);
+    if (selectedId && PT.setActiveClassId) PT.setActiveClassId(selectedId);
     save();
     fillForm();
     refresh();
