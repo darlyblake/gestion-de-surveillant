@@ -936,7 +936,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #b5c9e2; outline-
 #view-billets .billet-view-content { padding:22px;background:#f3f6fa }
 #view-billets .billet-dialog-actions { display:flex;justify-content:flex-end;padding:0 22px 22px }
 #view-billets .billet-paper { width:100%;max-width:680px;margin:0 auto;background:#fff;color:#111;border:0;border-radius:0;box-shadow:none;font-family:"Times New Roman",Times,serif }
-#view-billets .billet-paper-frame { min-height:310px;border:1px solid #222;padding:25px 28px;background:#fff }
+#view-billets .billet-paper-frame { min-height:310px;border:0;padding:25px 28px;background:#fff }
 #view-billets .billet-paper-header { text-align:center;margin:0 0 28px;padding:0;border:0 }
 #view-billets .billet-paper-header h2 { margin:0 0 5px;color:#111;font-family:"Times New Roman",Times,serif;font-size:17px;font-weight:700;text-transform:uppercase }
 #view-billets .billet-paper-header p { margin:0;color:#111;font-family:"Times New Roman",Times,serif;font-size:13px }
