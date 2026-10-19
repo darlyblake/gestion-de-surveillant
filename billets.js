@@ -42,7 +42,7 @@
   const current = () => state.classes.find(c => c.id === state.currentId) || state.classes[0];
   const centralClasses = () => PT.getCentralClasses ? PT.getCentralClasses() : [];
   function parseStudents(text) {
-    const list = String(text || '').split(/\\r?\\n/).map(line => line.replace(/^\\s*\\d+\\s*(?:[.)\\-–:]|\\t)\\s*/, '').replace(/\\t+/g, ' ').replace(/\\s+/g, ' ').trim()).filter(Boolean);
+    const list = String(text || '').split(/\r?\n/).map(line => line.replace(/^\s*\d+\s*(?:[.)\-–:]|\t)\s*/, '').replace(/\t+/g, ' ').replace(/\s+/g, ' ').trim()).filter(Boolean);
     return list;
   }
   function getLinkedClass(record) { return centralClasses().find(cls => cls.id === record.linkedClassId) || null; }
@@ -128,7 +128,7 @@
     if (!viewedBillet) return;
     const b = findBillet(viewedBillet.recordId, viewedBillet.billetId);
     if (!b) return;
-    const printWindow = window.open('', '_blank', 'noopener,noreferrer,width=900,height=700');
+    const printWindow = window.open('', '_blank', 'width=900,height=700');
     if (!printWindow) { say('Autorisez les fenêtres contextuelles pour imprimer le billet.', 'bad'); return; }
     const css = `<style>
       @page{size:A4 portrait;margin:14mm}*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#172b45;background:#fff}
