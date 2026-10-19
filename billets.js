@@ -128,23 +128,29 @@
   function billetMarkup(b) {
     const isEntry = b.type === 'entree';
     const title = isEntry ? 'BILLET D’ENTRÉE' : 'BILLET DE SORTIE';
-    const action = isEntry ? 'est autorisé à entrer dans l’établissement' : 'est autorisé à sortir de l’établissement';
+    const action = isEntry ? 'autorisé à entrer dans l’établissement' : 'autorisé à sortir de l’établissement';
     const date = dateLabel(b.date);
-    const time = b.time || '.................';
-    const reason = b.motif || '........................................';
+    const time = b.time || '........................';
+    const reason = b.motif || '........................................................';
+    const cfg = PT.getSchoolConfig ? PT.getSchoolConfig() : {};
+    const place = [cfg.city, cfg.address].filter(Boolean).join(', ');
     return '<article class="billet-paper ' + (isEntry ? 'billet-paper-entry' : 'billet-paper-exit') + '">' +
+      '<div class="billet-paper-frame">' +
       schoolHeader() +
       '<h1 class="billet-paper-title">' + title + '</h1>' +
+      '<div class="billet-paper-reference"><span>Nature : <strong>' + (isEntry ? 'Entrée' : 'Sortie') + '</strong></span><span>Date : <strong>' + esc(date) + '</strong></span></div>' +
       '<div class="billet-paper-text">' +
-      '<p>Nom de l’élève : <strong>' + esc(b.student || '........................................') + '</strong></p>' +
-      '<p>Classe : <strong>' + esc(b.className || '........') + '</strong>, ' + action + ' le <strong>' + esc(date) + '</strong> à <strong>' + esc(time) + '</strong>.</p>' +
-      '<p>Raison : <strong>' + esc(reason) + '</strong></p>' +
-      (isEntry ? '<p>Heure d’arrivée : <strong>' + esc(time) + '</strong></p>' : '<p>Retour le : <strong>........................</strong> à <strong>....................</strong></p>') +
+      '<p>Nom et prénom de l’élève : <strong>' + esc(b.student || '........................................................') + '</strong></p>' +
+      '<p>Classe : <strong>' + esc(b.className || '........................') + '</strong></p>' +
+      '<p>L’élève est ' + action + ' le <strong>' + esc(date) + '</strong> à <strong>' + esc(time) + '</strong>.</p>' +
+      '<p>Motif : <strong>' + esc(reason) + '</strong></p>' +
+      (isEntry
+        ? '<p>Heure d’arrivée : <strong>' + esc(time) + '</strong></p>'
+        : '<p>Heure de sortie : <strong>' + esc(time) + '</strong></p><p>Retour prévu le : <strong>................................</strong> à <strong>................</strong></p>') +
       '</div>' +
-      '<p class="billet-paper-place">Ngong, le : <strong>' + esc(date) + '</strong></p>' +
-      '<p class="billet-paper-signature">Le Surveillant Général,</p>' +
-      '<div class="billet-paper-signature-space"></div>' +
-      '</article>';
+      '<div class="billet-paper-footer"><p class="billet-paper-place">' + (place ? esc(place) + ', ' : '') + 'le <strong>' + esc(date) + '</strong></p>' +
+      '<div class="billet-paper-signature"><span>Le Surveillant Général</span><div class="billet-paper-signature-space"></div><span>Signature et cachet</span></div></div>' +
+      '</div></article>';
   }
   function findBillet(recordId, billetId) {
     const record = state.classes.find(c => c.id === recordId);
@@ -169,26 +175,37 @@
     const printWindow = window.open('', '_blank', 'width=900,height=700');
     if (!printWindow) { say('Autorisez les fenêtres contextuelles pour imprimer le billet.', 'bad'); return; }
     const css = `<style>
-      @page{size:A4 portrait;margin:12mm}
-      *{box-sizing:border-box}
-      body{margin:0;background:#fff;color:#000;font-family:"Times New Roman",Times,serif}
-      .billet-paper{width:100%;min-height:118mm;margin:0 auto;padding:5mm 7mm;border:2px solid #000;background:#fff;color:#000}
-      .billet-paper-header{text-align:center;margin:0 0 4mm;padding:0}
-      .billet-paper-header h2{font-size:17pt;font-style:italic;font-weight:700;text-transform:uppercase;margin:0 0 2mm;color:#000}
-      .billet-paper-header p{font-size:13pt;font-weight:700;margin:1mm 0;color:#000}
-      .sheet-school-logo img{max-width:18mm;max-height:18mm;object-fit:contain}
-      .billet-paper-title{text-align:center;font-size:21pt;font-weight:700;margin:4mm 0 8mm;color:#000}
-      .billet-paper-text p{font-size:14pt;line-height:1.8;margin:0 0 2mm;overflow-wrap:anywhere}
-      .billet-paper-text strong{font-weight:400;text-decoration:underline;text-underline-offset:2px}
-      .billet-paper-place{text-align:right;font-size:14pt;margin:4mm 8mm 2mm 0}
-      .billet-paper-signature{text-align:right;font-size:14pt;margin:0 8mm 0 0}
-      .billet-paper-signature-space{height:15mm}
-      @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.billet-paper{break-inside:avoid}}
+      @page { size: A4 portrait; margin: 15mm; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; background: #fff; color: #111; }
+      body { font-family: "Times New Roman", Times, serif; }
+      .billet-paper { width: 100%; margin: 0 auto; padding: 0; border: 0; background: #fff; color: #111; }
+      .billet-paper-frame { min-height: 125mm; border: 1.5pt solid #111; padding: 8mm 10mm; }
+      .billet-paper-header { position: relative; text-align: center; margin: 0 0 7mm; padding: 0 0 4mm; border-bottom: 1pt solid #222; }
+      .billet-paper-header h2 { margin: 0 0 2mm; font-size: 15pt; font-weight: 700; text-transform: uppercase; color: #111; }
+      .billet-paper-header p { margin: 1mm 0; font-size: 10pt; color: #111; }
+      .sheet-school-logo { margin: 0 0 2mm; text-align: center; }
+      .sheet-school-logo img { max-width: 17mm; max-height: 17mm; object-fit: contain; }
+      .billet-paper-title { margin: 0 0 6mm; padding: 0; text-align: center; font-size: 19pt; line-height: 1.2; font-weight: 700; text-decoration: underline; color: #111; }
+      .billet-paper-reference { display: flex; justify-content: space-between; gap: 8mm; margin: 0 0 6mm; padding: 2mm 0; border-top: .5pt solid #777; border-bottom: .5pt solid #777; font-size: 10pt; }
+      .billet-paper-text p { margin: 0 0 4mm; font-size: 12pt; line-height: 1.55; overflow-wrap: anywhere; }
+      .billet-paper-text strong { font-weight: 700; text-decoration: underline; text-underline-offset: 1.5pt; }
+      .billet-paper-footer { display: flex; justify-content: space-between; align-items: flex-end; gap: 8mm; margin-top: 8mm; }
+      .billet-paper-place { margin: 0; font-size: 10pt; }
+      .billet-paper-signature { min-width: 48mm; text-align: center; font-size: 10pt; }
+      .billet-paper-signature > span:first-child { font-weight: 700; }
+      .billet-paper-signature-space { height: 17mm; }
+      .billet-paper-signature > span:last-child { display: block; font-size: 9pt; }
+      @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .billet-paper-frame { break-inside: avoid; } }
     </style>`;
-    printWindow.onload = () => setTimeout(() => { printWindow.focus(); printWindow.print(); }, 300);
     printWindow.document.open();
-    printWindow.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Billet scolaire</title>' + css + '</head><body>' + billetMarkup(b) + '</body></html>');
+    printWindow.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + (b.type === 'entree' ? 'Billet d’entrée' : 'Billet de sortie') + '</title>' + css + '</head><body>' + billetMarkup(b) + '</body></html>');
     printWindow.document.close();
+    // Déclencher l’impression après l’écriture du document évite la fenêtre blanche.
+    printWindow.setTimeout(() => {
+      try { printWindow.focus(); printWindow.print(); }
+      catch (_) { say('Impossible de lancer l’impression. Réessayez depuis la fenêtre du billet.', 'bad'); }
+    }, 500);
   }
   function renderList() {
     const list = $('b-class-list');
